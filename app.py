@@ -61,4 +61,4 @@ st.dataframe(df_ranking[colunas_exibicao].style.format({'Pontuacao_Total': '{:.2
 
 st.subheader("📊 Performance Visual Gráfica")
 st.bar_chart(data=df_ranking, x='Vendedor', y='Pontuacao_Total')
-é
+
