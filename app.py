@@ -25,10 +25,10 @@ data = {
     'Real_Peso': [14180.0, 67825.0, 73275.0, 56720.0, 73149.0, 87924.0, 45028.0, 50418.0, 115611.5, 102832.0, 2825.0, 4203.0, 47402.0, 47751.0, 63168.0, 38206.0, 530.0, 19999.0, 9969.0, 5370.0],
     'Meta_PM': [18.76, 16.73, 17.05, 17.48, 17.45, 18.23, 15.50, 18.88, 20.05, 24.15, 24.00, 19.75, 17.75, 16.70, 18.60, 17.75, 18.00, 20.08, 18.40, 20.15],
     'Real_PM': [17.97, 16.10, 16.82, 17.11, 17.11, 18.09, 15.27, 18.50, 19.73, 24.04, 23.43, 18.99, 17.53, 16.89, 15.65, 17.46, 12.45, 19.77, 18.28, 21.22],
-    'Meta_Pos': [20, 563, 578, 494, 592, 525, 444, 286, 39, 439, 17, 105, 552, 370, 366, 63, 5, 180, 42, 47],
-    'Real_Pos': [17, 570, 579, 487, 591, 512, 451, 278, 72, 458, 16, 82, 589, 354, 335, 61, 2, 143, 23, 50],
-    'Meta_Cad': [0, 12, 11, 20, 13, 17, 33, 40, 0, 6, 1, 40, 14, 30, 30, 3, 5, 25, 25, 10],
-    'Real_Cad': [0, 2, 15, 11, 21, 9, 18, 10, 10, 10, 0, 19, 17, 11, 10, 1, 0, 38, 13, 18]
+    'Meta_Pos': [40, 57, 57, 46, 53, 51, 31, 36, 13, 23, 17, 32, 15, 23, 41, 31, 10, 34, 31, 47],
+    'Real_Pos': [34, 58, 57, 45, 53, 50, 32, 35, 24, 24, 16, 25, 16, 22, 38, 30, 4, 27, 17, 50],
+    'Meta_Cad': [0, 6, 11, 10, 13, 17, 11, 8, 0, 3, 5, 40, 14, 30, 3, 3, 10, 25, 25, 5],
+    'Real_Cad': [0, 1, 15, 0, 21, 9, 6, 2, 10, 5, 0, 19, 17, 11, 1, 1, 0, 38, 13, 9]
 }
 
 df = pd.DataFrame(data)
@@ -68,15 +68,15 @@ campeao_pm = df.loc[df['P_PM'].idxmax()]['Vendedor'] if df['P_PM'].max() > 0 els
 campeao_pos = df.loc[df['P_Pos'].idxmax()]['Vendedor'] if df['P_Pos'].max() > 0 else "Ninguém"
 campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor'] if df['P_Cad'].max() > 0 else "Ninguém"
 
-# --- VISUAL: TOP 5 GERAL ---
+# --- VISUAL: TOP 5 GERAL (HTML Ajustado com alto contraste de cores) ---
 st.markdown("### 🏆 OS 5 MELHORES DA CLASSIFICAÇÃO GERAL")
 col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
 
-col_t1.markdown(f"<div style='background-color:#FEF3C7; padding:15px; border-radius:10px; border-left:5px solid #F59E0B; text-align:center;'><b>🥇 1º Lugar</b><br><span style='font-size:20px; font-weight:bold; color:#B45309;'>{df_ranking.loc[0, 'Vendedor']}</span><br><small>{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t2.markdown(f"<div style='background-color:#F3F4F6; padding:15px; border-radius:10px; border-left:5px solid #9CA3AF; text-align:center;'><b>🥈 2º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#4B5563;'>{df_ranking.loc[1, 'Vendedor']}</span><br><small>{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t3.markdown(f"<div style='background-color:#FFEDD5; padding:15px; border-radius:10px; border-left:5px solid #EA580C; text-align:center;'><b>🥉 3º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#C2410C;'>{df_ranking.loc[2, 'Vendedor']}</span><br><small>{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t4.markdown(f"<div style='background-color:#EFF6FF; padding:15px; border-radius:10px; border-left:5px solid #3B82F6; text-align:center;'><b>🏅 4º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#1D4ED8;'>{df_ranking.loc[3, 'Vendedor']}</span><br><small>{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t5.markdown(f"<div style='background-color:#F5F3FF; padding:15px; border-radius:10px; border-left:5px solid #8B5CF6; text-align:center;'><b>🏅 5º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#6D28D9;'>{df_ranking.loc[4, 'Vendedor']}</span><br><small>{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
+col_t1.markdown(f"<div style='background-color:#FEF3C7; padding:15px; border-radius:10px; border-left:5px solid #F59E0B; text-align:center;'><b style='color:#B45309;'>🥇 1º Lugar</b><br><span style='font-size:20px; font-weight:bold; color:#78350F;'>{df_ranking.loc[0, 'Vendedor']}</span><br><b style='color:#78350F;'>{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts</b></div>", unsafe_allow_html=True)
+col_t2.markdown(f"<div style='background-color:#E5E7EB; padding:15px; border-radius:10px; border-left:5px solid #9CA3AF; text-align:center;'><b style='color:#4B5563;'>🥈 2º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#1F2937;'>{df_ranking.loc[1, 'Vendedor']}</span><br><b style='color:#1F2937;'>{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts</b></div>", unsafe_allow_html=True)
+col_t3.markdown(f"<div style='background-color:#FFEDD5; padding:15px; border-radius:10px; border-left:5px solid #EA580C; text-align:center;'><b style='color:#C2410C;'>🥉 3º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#7C2D12;'>{df_ranking.loc[2, 'Vendedor']}</span><br><b style='color:#7C2D12;'>{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts</b></div>", unsafe_allow_html=True)
+col_t4.markdown(f"<div style='background-color:#DBEAFE; padding:15px; border-radius:10px; border-left:5px solid #3B82F6; text-align:center;'><b style='color:#1D4ED8;'>🏅 4º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#1E3A8A;'>{df_ranking.loc[3, 'Vendedor']}</span><br><b style='color:#1E3A8A;'>{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts</b></div>", unsafe_allow_html=True)
+col_t5.markdown(f"<div style='background-color:#EDE9FE; padding:15px; border-radius:10px; border-left:5px solid #8B5CF6; text-align:center;'><b style='color:#6D28D9;'>🏅 5º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#4C1D95;'>{df_ranking.loc[4, 'Vendedor']}</span><br><b style='color:#4C1D95;'>{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts</b></div>", unsafe_allow_html=True)
 
 st.write("---")
 
@@ -102,4 +102,5 @@ df_exibir = df_exibir_base[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Pe
 df_exibir.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
 
 st.dataframe(df_exibir, use_container_width=True)
+
 
