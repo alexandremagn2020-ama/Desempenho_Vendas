@@ -25,28 +25,28 @@ data = {
     'Real_Peso': [14180.0, 67825.0, 73275.0, 56720.0, 73149.0, 87924.0, 45028.0, 50418.0, 115611.5, 102832.0, 2825.0, 4203.0, 47402.0, 47751.0, 63168.0, 38206.0, 530.0, 19999.0, 9969.0, 5370.0],
     'Meta_PM': [18.76, 16.73, 17.05, 17.48, 17.45, 18.23, 15.50, 18.88, 20.05, 24.15, 24.00, 19.75, 17.75, 16.70, 18.60, 17.75, 18.00, 20.08, 18.40, 20.15],
     'Real_PM': [17.97, 16.10, 16.82, 17.11, 17.11, 18.09, 15.27, 18.50, 19.73, 24.04, 23.43, 18.99, 17.53, 16.89, 15.65, 17.46, 12.45, 19.77, 18.28, 21.22],
-    'Meta_Pos': [40, 57, 57, 46, 53, 51, 31, 36, 13, 23, 17, 32, 15, 23, 41, 31, 10, 34, 31, 47],
-    'Real_Pos': [34, 58, 57, 45, 53, 50, 32, 35, 24, 24, 16, 25, 16, 22, 38, 30, 4, 27, 17, 50],
-    'Meta_Cad': [0, 6, 11, 10, 13, 17, 11, 8, 0, 3, 5, 40, 14, 30, 3, 3, 10, 25, 25, 5],
-    'Real_Cad': [0, 1, 15, 0, 21, 9, 6, 2, 10, 5, 0, 19, 17, 11, 1, 1, 0, 38, 13, 9]
+    'Meta_Pos': [40, 57, 54, 43, 44, 40, 31, 42, 26, 46, 17, 32, 42, 46, 41, 31, 10, 34, 31, 47],
+    'Real_Pos': [34, 58, 54, 43, 44, 39, 32, 41, 48, 48, 16, 25, 45, 44, 38, 30, 4, 27, 17, 50],
+    'Meta_Cad': [0, 12, 11, 20, 13, 17, 11, 16, 0, 12, 11, 40, 14, 30, 24, 15, 10, 25, 25, 10],
+    'Real_Cad': [0, 2, 15, 11, 21, 9, 6, 4, 10, 20, 0, 19, 17, 11, 8, 5, 0, 38, 13, 18]
 }
 
 df = pd.DataFrame(data)
 
-# Cálculos exatos de atingimento %
-df['At_Fat'] = df['Real_Fat'] / df['Meta_Fat']
-df['At_Peso'] = df['Real_Peso'] / df['Meta_Peso']
-df['At_PM'] = df['Real_PM'] / df['Meta_PM']
-df['At_Pos'] = df['Real_Pos'] / df['Meta_Pos']
+# Cálculos exatos de atingimento % multiplicados por 100 para exibição limpa
+df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
+df['At_Peso'] = (df['Real_Peso'] / df['Meta_Peso']) * 100
+df['At_PM'] = (df['Real_PM'] / df['Meta_PM']) * 100
+df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
 
-# Regra especial para Cadastros: se a meta for zero e houver realizado, ganha o teto de bônus
-df['At_Cad'] = np.where(df['Meta_Cad'] == 0, np.where(df['Real_Cad'] > 0, 1.15, 0.0), df['Real_Cad'] / df['Meta_Cad'])
+# Regra especial para Cadastros
+df['At_Cad'] = np.where(df['Meta_Cad'] == 0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
 
-# Função de Degraus Rígidos da Campanha
+# Função de Degraus Rígidos da Campanha (Convertida para trabalhar na escala de 0 a 100)
 def calcular_pontos_faixa(ating, pt90, pt100, pt110):
-    if ating < 0.90: return 0.0
-    elif ating < 1.00: return float(pt90)
-    elif ating < 1.10: return float(pt100)
+    if ating < 90.0: return 0.0
+    elif ating < 100.0: return float(pt90)
+    elif ating < 110.0: return float(pt100)
     else: return float(pt110)
 
 df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
@@ -68,7 +68,7 @@ campeao_pm = df.loc[df['P_PM'].idxmax()]['Vendedor'] if df['P_PM'].max() > 0 els
 campeao_pos = df.loc[df['P_Pos'].idxmax()]['Vendedor'] if df['P_Pos'].max() > 0 else "Ninguém"
 campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor'] if df['P_Cad'].max() > 0 else "Ninguém"
 
-# --- VISUAL: TOP 5 GERAL (HTML Ajustado com alto contraste de cores) ---
+# --- VISUAL: TOP 5 GERAL ---
 st.markdown("### 🏆 OS 5 MELHORES DA CLASSIFICAÇÃO GERAL")
 col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
 
@@ -92,15 +92,43 @@ col5.metric("📈 Novos Cadastros", f"{campeao_cad}", f"{df['P_Cad'].max():.2f} 
 
 st.write("---")
 
-# --- TABELA INTERATIVA FORMATADA COM TODOS OS 5 KPIS ---
-st.markdown("### 📋 TABELA CONSOLIDADA DE CLASSIFICAÇÃO GERAL")
+# --- TABELA INTERATIVA FORMATADA COM TODOS OS KPIS E PERCENTUAIS ---
+st.markdown("### 📋 TABELA CONSOLIDADA — PONTUAÇÕES E PERCENTUAIS DE ATINGIMENTO")
 
 df_exibir_base = df_ranking.copy()
 df_exibir_base.index += 1
 
-df_exibir = df_exibir_base[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].copy()
-df_exibir.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
+# Seleção das colunas de pontos e percentuais intercalados para leitura lógica
+colunas_finais = [
+    'COD', 'Vendedor', 'Pontuacao_Total', 
+    'At_Fat', 'P_Fat', 
+    'At_Peso', 'P_Peso', 
+    'At_PM', 'P_PM', 
+    'At_Pos', 'P_Pos', 
+    'At_Cad', 'P_Cad'
+]
 
-st.dataframe(df_exibir, use_container_width=True)
+df_exibir = df_exibir_base[colunas_finais].copy()
 
+# Renomeando as colunas de forma profissional
+df_exibir.columns = [
+    'CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 
+    'FATURAMENTO (%)', 'PONTOS FAT.', 
+    'PESO KG (%)', 'PONTOS PESO', 
+    'PREÇO MÉDIO (%)', 'PONTOS P.M.', 
+    'POSITIVAÇÃO (%)', 'PONTOS POSIT.', 
+    'CADASTROS (%)', 'PONTOS CADASTROS'
+]
 
+# Formatação limpa de exibição (Sinal de % e duas casas decimais nos pontos)
+st.dataframe(
+    df_exibir.style.format({
+        'PONTUAÇÃO TOTAL': '{:.2f}', 
+        'FATURAMENTO (%)': '{:.1f}%', 'PONTOS FAT.': '{:.1f}', 
+        'PESO KG (%)': '{:.1f}%', 'PONTOS PESO': '{:.1f}', 
+        'PREÇO MÉDIO (%)': '{:.1f}%', 'PONTOS P.M.': '{:.1f}', 
+        'POSITIVAÇÃO (%)': '{:.1f}%', 'PONTOS POSIT.': '{:.1f}', 
+        'CADASTROS (%)': '{:.1f}%', 'PONTOS CADASTROS': '{:.1f}'
+    }), 
+    use_container_width=True
+)
