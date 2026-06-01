@@ -7,10 +7,10 @@ st.set_page_config(layout="wide", page_title="Painel de Performance Executivo")
 
 # Título Principal com estilo limpo
 st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>🏆 PAINEL EXECUTIVO DE PERFORMANCE</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6B7280;'>Campanha de Vendas - Classificação e Indicadores</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6B7280;'>Campanha de Vendas — Sistema Estrito de Faixas Fixas</p>", unsafe_allow_html=True)
 st.write("---")
 
-# Base de dados (Primeiro Nome e Sem dados sensíveis da empresa)
+# Base de dados oficial unificada com os 5 KPIs mapeados
 data = {
     'COD': [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80057, 80058, 80060, 80061],
     'Vendedor': [
@@ -25,60 +25,63 @@ data = {
     'Real_Peso': [14180.0, 67825.0, 73275.0, 56720.0, 73149.0, 87924.0, 45028.0, 50418.0, 115611.5, 102832.0, 2825.0, 4203.0, 47402.0, 47751.0, 63168.0, 38206.0, 530.0, 19999.0, 9969.0, 5370.0],
     'Meta_PM': [18.76, 16.73, 17.05, 17.48, 17.45, 18.23, 15.50, 18.88, 20.05, 24.15, 24.00, 19.75, 17.75, 16.70, 18.60, 17.75, 18.00, 20.08, 18.40, 20.15],
     'Real_PM': [17.97, 16.10, 16.82, 17.11, 17.11, 18.09, 15.27, 18.50, 19.73, 24.04, 23.43, 18.99, 17.53, 16.89, 15.65, 17.46, 12.45, 19.77, 18.28, 21.22],
-    'Meta_Pos': [18, 55, 60, 48, 55, 65, 45, 55, 65, 75, 12, 25, 45, 42, 58, 45, 15, 30, 22, 20],
-    'Real_Pos': [15, 55, 62, 40, 56, 66, 46, 45, 50, 52, 5, 2, 45, 43, 58, 32, 0, 16, 8, 4],
-    'Meta_Cad': [2, 5, 5, 4, 5, 6, 4, 5, 7, 8, 2, 3, 4, 4, 5, 4, 2, 3, 2, 2],
-    'Real_Cad': [0, 2, 5, 0, 5, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 0, 0, 0, 0, 0]
+    'Meta_Pos': [20, 563, 578, 494, 592, 525, 444, 286, 39, 439, 17, 105, 552, 370, 366, 63, 5, 180, 42, 47],
+    'Real_Pos': [17, 570, 579, 487, 591, 512, 451, 278, 72, 458, 16, 82, 589, 354, 335, 61, 2, 143, 23, 50],
+    'Meta_Cad': [0, 12, 11, 20, 13, 17, 33, 40, 0, 6, 1, 40, 14, 30, 30, 3, 5, 25, 25, 10],
+    'Real_Cad': [0, 2, 15, 11, 21, 9, 18, 10, 10, 10, 0, 19, 17, 11, 10, 1, 0, 38, 13, 18]
 }
 
 df = pd.DataFrame(data)
 
-# Cálculos de Atingimento
+# Cálculos exatos de atingimento %
 df['At_Fat'] = df['Real_Fat'] / df['Meta_Fat']
 df['At_Peso'] = df['Real_Peso'] / df['Meta_Peso']
 df['At_PM'] = df['Real_PM'] / df['Meta_PM']
-df['At_Pos'] = np.where(df['Meta_Pos'] == 0, 1.0, df['Real_Pos'] / df['Meta_Pos'])
-df['At_Cad'] = np.where(df['Meta_Cad'] == 0, np.where(df['Real_Cad'] > 0, 1.1, 1.0), df['Real_Cad'] / df['Meta_Cad'])
+df['At_Pos'] = df['Real_Pos'] / df['Meta_Pos']
 
-# Conversão linear de notas (Regra da Campanha)
-def calcular_pontos(ating, p90, p100, p110):
+# Regra especial para Cadastros: se a meta for zero e houver realizado, ganha o teto de bônus
+df['At_Cad'] = np.where(df['Meta_Cad'] == 0, np.where(df['Real_Cad'] > 0, 1.15, 0.0), df['Real_Cad'] / df['Meta_Cad'])
+
+# Função de Degraus Rígidos da Campanha
+def calcular_pontos_faixa(ating, pt90, pt100, pt110):
     if ating < 0.90: return 0.0
-    elif ating <= 1.00: return p90 + ((ating - 0.90) / 0.10) * (p100 - p90)
-    else: return p100 + ((ating - 1.00) / 0.10) * (p110 - p100)
+    elif ating < 1.00: return float(pt90)
+    elif ating < 1.10: return float(pt100)
+    else: return float(pt110)
 
-df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontos(x, 5, 10, 15))
-df['P_Peso'] = df['At_Peso'].apply(lambda x: calcular_pontos(x, 5, 10, 15))
-df['P_PM'] = df['At_PM'].apply(lambda x: calcular_pontos(x, 10, 15, 20))
-df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos(x, 5, 7.5, 10))
-df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos(x, 5, 7.5, 10))
+df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
+df['P_Peso'] = df['At_Peso'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
+df['P_PM'] = df['At_PM'].apply(lambda x: calcular_pontos_faixa(x, 10, 15, 20))
+df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
+df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 
+# Soma unificada de todos os 5 KPIs
 df['Pontuacao_Total'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
 
 # Ordenação do Ranking
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
 df_ranking.index += 1
 
-# Identificação dos Campeões Individuais
-campeao_fat = df.loc[df['P_Fat'].idxmax()]['Vendedor']
-campeao_peso = df.loc[df['P_Peso'].idxmax()]['Vendedor']
-campeao_pm = df.loc[df['P_PM'].idxmax()]['Vendedor']
-campeao_pos = df.loc[df['P_Pos'].idxmax()]['Vendedor']
-campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor']
+# Geração de Campeões por KPI para os cards superiores
+campeao_fat = df.loc[df['P_Fat'].idxmax()]['Vendedor'] if df['P_Fat'].max() > 0 else "Ninguém"
+campeao_peso = df.loc[df['P_Peso'].idxmax()]['Vendedor'] if df['P_Peso'].max() > 0 else "Ninguém"
+campeao_pm = df.loc[df['P_PM'].idxmax()]['Vendedor'] if df['P_PM'].max() > 0 else "Ninguém"
+campeao_pos = df.loc[df['P_Pos'].idxmax()]['Vendedor'] if df['P_Pos'].max() > 0 else "Ninguém"
+campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor'] if df['P_Cad'].max() > 0 else "Ninguém"
 
-# --- VISUAL EM DESTAQUE: TOP 5 GERAL ---
+# --- VISUAL: TOP 5 GERAL ---
 st.markdown("### 🏆 OS 5 MELHORES DA CLASSIFICAÇÃO GERAL")
 col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
 
-# Posições do Top 5 formatadas como mini-cards executivos
-col_t1.markdown(f"<div style='background-color:#FEF3C7; padding:15px; border-radius:10px; border-left:5px solid #F59E0B; text-align:center;'><b>🥇 1º Lugar</b><br><span style='font-size:20px; font-weight:bold; color:#B45309;'>{df_ranking.iloc[0]['Vendedor']}</span><br><small>{df_ranking.iloc[0]['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t2.markdown(f"<div style='background-color:#F3F4F6; padding:15px; border-radius:10px; border-left:5px solid #9CA3AF; text-align:center;'><b>🥈 2º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#4B5563;'>{df_ranking.iloc[1]['Vendedor']}</span><br><small>{df_ranking.iloc[1]['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t3.markdown(f"<div style='background-color:#FFEDD5; padding:15px; border-radius:10px; border-left:5px solid #EA580C; text-align:center;'><b>🥉 3º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#C2410C;'>{df_ranking.iloc[2]['Vendedor']}</span><br><small>{df_ranking.iloc[2]['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t4.markdown(f"<div style='background-color:#EFF6FF; padding:15px; border-radius:10px; border-left:5px solid #3B82F6; text-align:center;'><b>🏅 4º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#1D4ED8;'>{df_ranking.iloc[3]['Vendedor']}</span><br><small>{df_ranking.iloc[3]['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
-col_t5.markdown(f"<div style='background-color:#F5F3FF; padding:15px; border-radius:10px; border-left:5px solid #8B5CF6; text-align:center;'><b>🏅 5º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#6D28D9;'>{df_ranking.iloc[4]['Vendedor']}</span><br><small>{df_ranking.iloc[4]['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
+col_t1.markdown(f"<div style='background-color:#FEF3C7; padding:15px; border-radius:10px; border-left:5px solid #F59E0B; text-align:center;'><b>🥇 1º Lugar</b><br><span style='font-size:20px; font-weight:bold; color:#B45309;'>{df_ranking.iloc['Vendedor']}</span><br><small>{df_ranking.iloc['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
+col_t2.markdown(f"<div style='background-color:#F3F4F6; padding:15px; border-radius:10px; border-left:5px solid #9CA3AF; text-align:center;'><b>🥈 2º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#4B5563;'>{df_ranking.iloc['Vendedor']}</span><br><small>{df_ranking.iloc['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
+col_t3.markdown(f"<div style='background-color:#FFEDD5; padding:15px; border-radius:10px; border-left:5px solid #EA580C; text-align:center;'><b>🥉 3º Lugar</b><br><span style='font-size:18px; font-weight:bold; color:#C2410C;'>{df_ranking.iloc['Vendedor']}</span><br><small>{df_ranking.iloc['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
+col_t4.markdown(f"<div style='background-color:#EFF6FF; padding:15px; border-radius:10px; border-left:5px solid #3B82F6; text-align:center;'><b>🏅 4º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#1D4ED8;'>{df_ranking.iloc['Vendedor']}</span><br><small>{df_ranking.iloc['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
+col_t5.markdown(f"<div style='background-color:#F5F3FF; padding:15px; border-radius:10px; border-left:5px solid #8B5CF6; text-align:center;'><b>🏅 5º Lugar</b><br><span style='font-size:16px; font-weight:bold; color:#6D28D9;'>{df_ranking.iloc['Vendedor']}</span><br><small>{df_ranking.iloc['Pontuacao_Total']:.2f} pts</small></div>", unsafe_allow_html=True)
 
 st.write("---")
 
-# --- VISUAL EM DESTAQUE: CAMPEÕES POR KPI ---
+# --- VISUAL: CAMPEÕES POR KPI ---
 st.markdown("### 🎖️ LÍDERES DESTACADOS POR INDICADOR (KPI)")
 col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -90,17 +93,17 @@ col5.metric("📈 Novos Cadastros", f"{campeao_cad}", f"{df['P_Cad'].max():.2f} 
 
 st.write("---")
 
-# --- TABELA INTERATIVA FORMATADA ---
+# --- TABELA INTERATIVA FORMATADA COM TODOS OS 5 KPIS ---
 st.markdown("### 📋 TABELA CONSOLIDADA DE CLASSIFICAÇÃO GERAL")
 
-# Tratamento visual da tabela (Renomeando colunas e adicionando barras visuais na pontuação)
 df_exibir = df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].copy()
-df_exibir.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CAD.']
+df_exibir.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
 
 st.dataframe(
     df_exibir.style.format({
         'PONTUAÇÃO TOTAL': '{:.2f}', 'PONTOS FAT.': '{:.2f}', 'PONTOS PESO': '{:.2f}', 
-        'PONTOS P.M.': '{:.2f}', 'PONTOS POSIT.': '{:.2f}', 'PONTOS CAD.': '{:.2f}'
-    }).bar(subset=['PONTUAÇÃO TOTAL'], color='#93C5FD', vmin=0, vmax=75), # Barra azul clara de fundo
+        'PONTOS P.M.': '{:.2f}', 'PONTOS POSIT.': '{:.2f}', 'PONTOS CADASTROS': '{:.2f}'
+    }).bar(subset=['PONTUAÇÃO TOTAL'], color='#93C5FD', vmin=0, vmax=70),
     use_container_width=True
 )
+
