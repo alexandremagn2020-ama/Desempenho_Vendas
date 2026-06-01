@@ -40,10 +40,10 @@ data_maio = {
     'Real_Peso': [3445.0, 17060.0, 18759.0, 13981.0, 17932.0, 21625.0, 11940.0, 13015.0, 29167.0, 26045.0, 575.0, 927.0, 12512.0, 10990.0, 16940.0, 8891.0, 5711.0, 6362.0, 4695.0, 615.0],
     'Meta_PM': [18.80, 16.20, 17.00, 17.20, 17.20, 18.00, 15.50, 18.30, 18.00, 24.00, 23.50, 18.30, 17.50, 17.00, 16.40, 16.50, 18.40, 18.40, 21.00, 18.00],
     'Real_PM': [15.91, 15.99, 16.54, 17.22, 16.91, 18.07, 15.38, 18.56, 17.50, 23.94, 23.89, 18.01, 17.54, 16.53, 16.58, 15.59, 17.86, 18.04, 20.62, 14.00],
-    'Meta_Pos': [4, 145, 149, 125, 153, 135, 116, 75, 8, 120, 4, 40, 150, 95, 95, 10, 55, 15, 35, 15],
-    'Real_Pos': [4, 143, 144, 122, 142, 128, 113, 69, 9, 117, 4, 20, 143, 89, 83, 14, 50, 12, 40, 9],
-    'Meta_Cad': [0, 3, 2, 4, 2, 4, 8, 8, 0, 0, 0, 10, 2, 8, 8, 0, 8, 5, 10, 10],
-    'Real_Cad': [0, 3, 3, 1, 2, 0, 3, 1, 1, 1, 0, 4, 3, 0, 1, 0, 8, 1, 13, 2]
+    'Meta_Pos': [4.0, 145.0, 149.0, 125.0, 153.0, 135.0, 116.0, 75.0, 8.0, 120.0, 4.0, 40.0, 150.0, 95.0, 95.0, 10.0, 55.0, 15.0, 35.0, 15.0],
+    'Real_Pos': [4.0, 143.0, 144.0, 122.0, 142.0, 128.0, 113.0, 69.0, 9.0, 117.0, 4.0, 20.0, 143.0, 89.0, 83.0, 14.0, 50.0, 12.0, 40.0, 9.0],
+    'Meta_Cad': [0.0, 3.0, 2.0, 4.0, 2.0, 4.0, 8.0, 8.0, 0.0, 0.0, 0.0, 10.0, 2.0, 8.0, 8.0, 0.0, 8.0, 5.0, 10.0, 10.0],
+    'Real_Cad': [0.0, 3.0, 3.0, 1.0, 2.0, 0.0, 3.0, 1.0, 1.0, 1.0, 0.0, 4.0, 3.0, 0.0, 1.0, 0.0, 8.0, 1.0, 13.0, 2.0]
 }
 
 # -------------------------------------------------------------------------
@@ -63,7 +63,7 @@ else:
 codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057]
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Rotas Especiais / Homologação', 'Vendedores Padrão')
 
-Filtro 2: Caixa para ativar ou remover categorias extras
+# Filtro 2: Caixa para ativar ou remover categorias extras
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
 
 if not mostrar_especiais:
@@ -80,7 +80,7 @@ df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
 # Tratamento para metas zeradas em cadastro que obtiveram resultado
 df['At_Cad'] = np.where(df['Meta_Cad'] == 0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
 
-Função rígida de faixas da campanha
+# Função rígida de faixas da campanha
 def calcular_pontos_faixa(ating, pt90, pt100, pt110):
     if ating < 90.0: return 0.0
     elif ating < 100.0: return float(pt90)
@@ -131,4 +131,3 @@ if len(df_ranking) > 0:
     campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor'] if df['P_Cad'].max() > 0 else "Ninguém"
 
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("💰 Faturamento", f"{campeao_fat}", f"{df['P_Fat'].max():.2f} pts")
