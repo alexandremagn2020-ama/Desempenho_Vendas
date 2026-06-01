@@ -101,8 +101,5 @@ df_exibir_base.index += 1
 df_exibir = df_exibir_base[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].copy()
 df_exibir.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
 
-# Visualização limpa em formato de tabela
 st.dataframe(df_exibir, use_container_width=True)
-
-)
 
