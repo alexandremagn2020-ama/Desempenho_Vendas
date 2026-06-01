@@ -12,7 +12,7 @@ st.write("---")
 
 # Base de dados oficial unificada com os 5 KPIs mapeados
 data = {
-    'COD':,
+    'COD': [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80057, 80058, 80060, 80061],
     'Vendedor': [
         'Homologação', 'Carlos', 'Valdinei', 'Luiz', 'Wesley', 
         'Celio', 'Helio', 'Raimundo', 'Mauricio', 'Rota BH', 
@@ -25,10 +25,10 @@ data = {
     'Real_Peso': [14180.0, 67825.0, 73275.0, 56720.0, 73149.0, 87924.0, 45028.0, 50418.0, 115611.5, 102832.0, 2825.0, 4203.0, 47402.0, 47751.0, 63168.0, 38206.0, 530.0, 19999.0, 9969.0, 5370.0],
     'Meta_PM': [18.76, 16.73, 17.05, 17.48, 17.45, 18.23, 15.50, 18.88, 20.05, 24.15, 24.00, 19.75, 17.75, 16.70, 18.60, 17.75, 18.00, 20.08, 18.40, 20.15],
     'Real_PM': [17.97, 16.10, 16.82, 17.11, 17.11, 18.09, 15.27, 18.50, 19.73, 24.04, 23.43, 18.99, 17.53, 16.89, 15.65, 17.46, 12.45, 19.77, 18.28, 21.22],
-    'Meta_Pos':,
-    'Real_Pos':,
-    'Meta_Cad':,
-    'Real_Cad':
+    'Meta_Pos': [20, 563, 578, 494, 592, 525, 444, 286, 39, 439, 17, 105, 552, 370, 366, 63, 5, 180, 42, 47],
+    'Real_Pos': [17, 570, 579, 487, 591, 512, 451, 278, 72, 458, 16, 82, 589, 354, 335, 61, 2, 143, 23, 50],
+    'Meta_Cad': [0, 12, 11, 20, 13, 17, 33, 40, 0, 6, 1, 40, 14, 30, 30, 3, 5, 25, 25, 10],
+    'Real_Cad': [0, 2, 15, 11, 21, 9, 18, 10, 10, 10, 0, 19, 17, 11, 10, 1, 0, 38, 13, 18]
 }
 
 df = pd.DataFrame(data)
@@ -58,7 +58,7 @@ df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 # Soma unificada de todos os 5 KPIs
 df['Pontuacao_Total'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
 
-# Ordenação do Ranking Geral (O índice vira 0 a 19 internamente)
+# Ordenação do Ranking Geral
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
 
 # Geração de Campeões por KPI para os cards superiores
@@ -68,7 +68,7 @@ campeao_pm = df.loc[df['P_PM'].idxmax()]['Vendedor'] if df['P_PM'].max() > 0 els
 campeao_pos = df.loc[df['P_Pos'].idxmax()]['Vendedor'] if df['P_Pos'].max() > 0 else "Ninguém"
 campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor'] if df['P_Cad'].max() > 0 else "Ninguém"
 
-# --- VISUAL: TOP 5 GERAL (Correção aplicada aqui) ---
+# --- VISUAL: TOP 5 GERAL ---
 st.markdown("### 🏆 OS 5 MELHORES DA CLASSIFICAÇÃO GERAL")
 col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
 
@@ -95,20 +95,14 @@ st.write("---")
 # --- TABELA INTERATIVA FORMATADA COM TODOS OS 5 KPIS ---
 st.markdown("### 📋 TABELA CONSOLIDADA DE CLASSIFICAÇÃO GERAL")
 
-# Ajustar o índice para começar visualmente em 1º na tabela
 df_exibir_base = df_ranking.copy()
 df_exibir_base.index += 1
 
 df_exibir = df_exibir_base[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].copy()
 df_exibir.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
 
-st.dataframe(
-    df_exibir.style.format({
-        'PONTUAÇÃO TOTAL': '{:.2f}', 'PONTOS FAT.': '{:.2f}', 'PONTOS PESO': '{:.2f}', 
-        'PONTOS P.M.': '{:.2f}', 'PONTOS POSIT.': '{:.2f}', 'PONTOS CADASTROS': '{:.2f}'
-    }).bar(subset=['PONTUAÇÃO TOTAL'], color='#93C5FD', vmin=0, vmax=70),
-    use_container_width=True
-)
+# Visualização limpa em formato de tabela
+st.dataframe(df_exibir, use_container_width=True)
 
 )
 
