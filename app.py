@@ -1,6 +1,6 @@
 import streamlit as st
 
-SENHA_CORRETA = "minha_senha_secreta"
+SENHA_CORRETA = "bacon"
 
 # Campo de senha com chave fixa
 senha = st.text_input("Digite a senha:", type="password", key="senha")
