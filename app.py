@@ -11,7 +11,7 @@ st.markdown("<p style='text-align: center; color: #6B7280;'>Campanha de Vendas �
 st.write("---")
 
 # -------------------------------------------------------------------------
-# 1. MÓDULO DE DADOS COMPLETO E SINCRONIZADO (21 VENDEDORES)
+# 1. MÓDULO DE DADOS COMPLETO E SINCRONIZADO (21 VENDEDORES EM AMBOS OS PERÍODOS)
 # -------------------------------------------------------------------------
 
 data_quad = {
