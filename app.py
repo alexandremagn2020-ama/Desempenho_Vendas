@@ -2,23 +2,20 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# Configuração de página corporativa ampla
-st.set_page_config(layout="wide", page_title="Painel de Performance Executivo")
+# Configuração da página para aproveitar toda a largura do monitor
+st.set_page_config(layout="wide", page_title="Tabelas Consolidadas de Vendas")
 
-# Título Principal Estilizado
-st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>🏆 PAINEL EXECUTIVO DE PERFORMANCE</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6B7280;'>Campanha de Vendas — Sistema Estrito de Faixas Fixas por Período</p>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>📊 TABELAS DE PONTUAÇÃO E ATINGIMENTO</h2>", unsafe_allow_html=True)
 st.write("---")
 
 # -------------------------------------------------------------------------
-# 1. BASE DE DADOS COMPLETA E SINCRONIZADA (COMPENSAÇÃO DE ENTRADAS/SAÍDAS)
+# 1. BASE DE DADOS INTEGRADA (21 VENDEDORES ADAPTADOS)
 # -------------------------------------------------------------------------
 
-# Dados do Acumulado (1º Quadrimestre) - Tallison adicionado com ZEROS no final
 data_quad = {
     'COD': [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80057, 80058, 80060, 80061, 80062],
     'Vendedor': ['Homologação', 'Carlos', 'Valdinei', 'Luiz', 'Wesley', 'Celio', 'Helio', 'Raimundo', 'Mauricio', 'Rota BH', 'Rota BH (Int)', 'Frederico', 'Flavio', 'Wanderson', 'Daniel', 'Mauricio Jr', 'Gilbert', 'Natalia', 'Janete', 'RPA', 'Tallison'],
-    'Meta_Fat': [318880.0, 1171100.0, 1381200.0, 1136600.0, 1396000.0, 1658500.0, 751750.0, 1132500.0, 2315350.0, 2535200.0, 96000.0, 348750.0, 967250.0, 860500.0, 1293350.0, 664000.0, 90000.0, 479800.0, 331200.0, 241500.0, 1.0], # 1.0 evita divisão por zero
+    'Meta_Fat': [318880.0, 1171100.0, 1381200.0, 1136600.0, 1396000.0, 1658500.0, 751750.0, 1132500.0, 2315350.0, 2535200.0, 96000.0, 348750.0, 967250.0, 860500.0, 1293350.0, 664000.0, 90000.0, 479800.0, 331200.0, 241500.0, 1.0],
     'Real_Fat': [254754.40, 1091928.00, 1232846.85, 970745.58, 1251693.40, 1590120.70, 687613.80, 932907.49, 2280576.70, 2471894.88, 66186.00, 79820.22, 830930.82, 806371.35, 988358.30, 667041.86, 6598.00, 395428.14, 182194.05, 113946.15, 0.0],
     'Meta_Peso': [17000.0, 70000.0, 81000.0, 65000.0, 80000.0, 91000.0, 48500.0, 60000.0, 115500.0, 105000.0, 4000.0, 17500.0, 54500.0, 51500.0, 69500.0, 37500.0, 5000.0, 24000.0, 18000.0, 12000.0, 1.0],
     'Real_Peso': [14180.0, 67825.0, 73275.0, 56720.0, 73149.0, 87924.0, 45028.0, 50418.0, 115611.5, 102832.0, 2825.0, 4203.0, 47402.0, 47751.0, 63168.0, 38206.0, 530.0, 19999.0, 9969.0, 5370.0, 0.0],
@@ -30,7 +27,6 @@ data_quad = {
     'Real_Cad': [3.0, 2.0, 30.0, 11.0, 21.0, 9.0, 6.0, 1.0, 10.0, 5.0, 0.0, 19.0, 17.0, 11.0, 8.0, 2.0, 0.0, 38.0, 13.0, 9.0, 0.0]
 }
 
-# Dados Isolados de Maio/2026 - Gilbert adicionado com ZEROS na posição correta
 data_maio = {
     'COD': [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80057, 80058, 80060, 80061, 80062],
     'Vendedor': ['Homologação', 'Carlos', 'Valdinei', 'Luiz', 'Wesley', 'Celio', 'Helio', 'Raimundo', 'Mauricio', 'Rota BH', 'Rota BH (Int)', 'Frederico', 'Flavio', 'Wanderson', 'Daniel', 'Mauricio Jr', 'Gilbert', 'Natalia', 'Janete', 'RPA', 'Tallison'],
@@ -47,10 +43,9 @@ data_maio = {
 }
 
 # -------------------------------------------------------------------------
-# 2. SEÇÃO DE FILTROS NA BARRA LATERAL (SIDEBAR)
+# 2. FILTROS BÁSICOS NA BARRA LATERAL
 # -------------------------------------------------------------------------
 st.sidebar.header("⚙️ Configurações do Painel")
-
 periodo = st.sidebar.radio("Selecionar Período:", ["1º Quadrimestre", "Maio/2026"])
 
 if periodo == "1º Quadrimestre":
@@ -58,17 +53,15 @@ if periodo == "1º Quadrimestre":
 else:
     df = pd.DataFrame(data_maio)
 
-# Ocultar categorias especiais por código
-codigos_filtrados = [80001, 80012, 80021, 80022, 80055, 80057, 80061]
-df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Rotas Especiais / Homologação', 'Vendedores Padrão')
+codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80062]
+df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
-
 if not mostrar_especiais:
-    df = df[df['Categoria'] == 'Vendedores Padrão'].reset_index(drop=True)
+    df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
 
 # -------------------------------------------------------------------------
-# 3. CRITÉRIOS DE CÁLCULO DE METAS (DEGRAUS SECOS)
+# 3. CÁLCULO DE PONTOS E PERCENTUAIS
 # -------------------------------------------------------------------------
 df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
 df['At_Peso'] = (df['Real_Peso'] / df['Meta_Peso']) * 100
@@ -90,36 +83,26 @@ df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 
 df['Pontuacao_Total'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
+df_ranking.index += 1
 
 # -------------------------------------------------------------------------
-# 4. EXIBIÇÃO DO PODIO (TOP 5 GERAL)
+# 4. EXIBIÇÃO EXCLUSIVA DAS DUAS TABELAS PEDIDAS
 # -------------------------------------------------------------------------
-if len(df_ranking) > 0:
-    st.markdown(f"### 🏆 OS 5 MELHORES DA CLASSIFICAÇÃO GERAL — {periodo.upper()}")
-    col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
 
-    def render_card(col, posicao, label, bg, border, text_color, dark_text):
-        if len(df_ranking) > posicao:
-            col.markdown(f"<div style='background-color:{bg}; padding:15px; border-radius:10px; border-left:5px solid {border}; text-align:center;'><b style='color:{text_color};'>{label}</b><br><span style='font-size:18px; font-weight:bold; color:{dark_text};'>{df_ranking.loc[posicao, 'Vendedor']}</span><br><b style='color:{dark_text};'>{df_ranking.loc[posicao, 'Pontuacao_Total']:.2f} pts</b></div>", unsafe_allow_html=True)
-        else:
-            col.markdown(f"<div style='background-color:#F3F4F6; padding:15px; border-radius:10px; text-align:center; color:#9CA3AF;'>Sem dados</div>", unsafe_allow_html=True)
+# --- TABELA 1: EXIBIÇÃO DE PONTOS ---
+st.markdown(f"### 📋 TABELA 1: PONTUAÇÃO ACUMULADA POR KPI — {periodo.upper()}")
+df_pontos = df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].copy()
+df_pontos.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
+st.dataframe(df_pontos, use_container_width=True)
 
-    render_card(col_t1, 0, "🥇 1º Lugar", "#FEF3C7", "#F59E0B", "#B45309", "#78350F")
-    render_card(col_t2, 1, "🥈 2º Lugar", "#E5E7EB", "#9CA3AF", "#4B5563", "#1F2937")
-    render_card(col_t3, 2, "🥉 3º Lugar", "#FFEDD5", "#EA580C", "#C2410C", "#7C2D12")
-    render_card(col_t4, 3, "🏅 4º Lugar", "#DBEAFE", "#3B82F6", "#1D4ED8", "#1E3A8A")
-    render_card(col_t5, 4, "🏅 5º Lugar", "#EDE9FE", "#8B5CF6", "#6D28D9", "#4C1D95")
+st.write("---")
 
-    st.write("---")
+# --- TABELA 2: EXIBIÇÃO DE PERCENTUAIS ---
+st.markdown(f"### 📊 TABELA 2: PERCENTUAIS DE ATINGIMENTO METAS (%)")
+df_percs = df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].copy()
+df_percs.columns = ['CÓDIGO', 'VENDEDOR', 'ATING. FATURAMENTO', 'ATING. PESO KG', 'ATING. PREÇO MÉDIO', 'ATING. POSITIVAÇÃO', 'ATING. CADASTROS']
 
-    # --- LÍDERES DOS KPIS ---
-    st.markdown("### 🎖️ LÍDERES DESTACADOS POR INDICADOR (KPI)")
-    campeao_fat = df.loc[df['P_Fat'].idxmax()]['Vendedor'] if df['P_Fat'].max() > 0 else "Ninguém"
-    campeao_peso = df.loc[df['P_Peso'].idxmax()]['Vendedor'] if df['P_Peso'].max() > 0 else "Ninguém"
-    campeao_pm = df.loc[df['P_PM'].idxmax()]['Vendedor'] if df['P_PM'].max() > 0 else "Ninguém"
-    campeao_pos = df.loc[df['P_Pos'].idxmax()]['Vendedor'] if df['P_Pos'].max() > 0 else "Ninguém"
-    campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor'] if df['P_Cad'].max() > 0 else "Ninguém"
-
-    col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("💰 Faturamento", f"{campeao_fat}", f"{df['P_Fat'].max():.2f} pts")
-    col2.metric("📦 Peso (KG)", f"{campeao_peso}", f"{df['P_Peso'].max():.2f} pts")
+st.dataframe(df_percs.style.format({
+    'ATING. FATURAMENTO': '{:.1f}%', 'ATING. PESO KG': '{:.1f}%', 
+    'ATING. PREÇO MÉDIO': '{:.1f}%', 'ATING. POSITIVAÇÃO': '{:.1f}%', 'ATING. CADASTROS': '{:.1f}%'
+}), use_container_width=True)
