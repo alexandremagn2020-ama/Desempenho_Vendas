@@ -1,15 +1,11 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import streamlit as st
-import auth  # importa o módulo de autenticação
+import auth
 
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
 st.markdown("## Conteúdo da página Quadrimestre")
-
-st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>🏆 DESEMPENHO — MAIO / 2026</h2>", unsafe_allow_html=True)
-st.write("---")
 
 
 data_maio = {
