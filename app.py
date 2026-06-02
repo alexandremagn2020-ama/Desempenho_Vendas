@@ -1,4 +1,17 @@
 import streamlit as st
+import streamlit as st
+
+# Defina a senha aqui
+SENHA_CORRETA = "minha_senha_secreta"
+
+senha = st.text_input("Digite a senha:", type="password")
+
+if senha != SENHA_CORRETA:
+    st.warning("Senha incorreta ou não informada.")
+    st.stop()
+
+st.success("✅ Bem-vindo ao painel!")
+
 
 st.set_page_config(layout="wide", page_title="Portal de Performance")
 
