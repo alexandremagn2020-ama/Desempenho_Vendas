@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-st.set_page_config(layout="wide", page_title="Maio/2026")
 st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>🏆 DESEMPENHO — MAIO / 2026</h2>", unsafe_allow_html=True)
 st.write("---")
+
 
 data_maio = {
     'COD': [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80057, 80058, 80060, 80061, 80062],
