@@ -4,8 +4,8 @@ import streamlit as st
 SENHA_CORRETA = "minha_senha_secreta"
 
 # Captura parâmetros da URL
-params = st.experimental_get_query_params()
-senha = params.get("senha", [""])[0]
+params = st.query_params
+senha = params.get("senha", "")
 
 # Validação
 if senha != SENHA_CORRETA:
