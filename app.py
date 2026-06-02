@@ -1,6 +1,6 @@
 import streamlit as st
 
-SENHA_CORRETA = "minha_senha_secreta"
+SENHA_CORRETA = "bacon"
 
 # Se ainda não existe a chave "autenticado", cria como False
 if "autenticado" not in st.session_state:
