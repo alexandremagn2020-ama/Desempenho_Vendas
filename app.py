@@ -3,14 +3,15 @@ import pandas as pd
 import numpy as np
 
 # Configuração de página corporativa ampla
-st.set_page_config(layout="wide", page_title="Tabelas de Vendas")
+st.set_page_config(layout="wide", page_title="Painel de Performance Executivo")
 
-st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>📊 RELATÓRIO CONSOLIDADO DE VENDAS</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6B7280;'>Visualização Exclusiva de Tabelas de Pontos e Metas</p>", unsafe_allow_html=True)
+# Título Principal Estilizado
+st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>🏆 PAINEL EXECUTIVO DE PERFORMANCE</h2>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6B7280;'>Campanha de Vendas — Pódio Geral Fixo e Tabelas por Período</p>", unsafe_allow_html=True)
 st.write("---")
 
 # -------------------------------------------------------------------------
-# 1. BASE DE DADOS COMPLETA E SINCRONIZADA (21 VENDEDORES)
+# 1. BASES DE DADOS ORIGINAIS SINCRONIZADAS
 # -------------------------------------------------------------------------
 
 data_quad = {
@@ -44,67 +45,77 @@ data_maio = {
 }
 
 # -------------------------------------------------------------------------
-# 2. SEÇÃO DE FILTROS NA BARRA LATERAL (SIDEBAR)
+# 2. MOTOR DE CÁLCULO GERAL FIXO (PARA OS CARDS DO ACUMULADO)
 # -------------------------------------------------------------------------
-st.sidebar.header("⚙️ Filtros")
+df_geral = pd.DataFrame(data_quad).copy()
+df_geral['At_Fat'] = (df_geral['Real_Fat'] / df_geral['Meta_Fat']) * 100
+df_geral['At_Peso'] = (df_geral['Real_Peso'] / df_geral['Meta_Peso']) * 100
+df_geral['At_PM'] = (df_geral['Real_PM'] / df_geral['Meta_PM']) * 100
+df_geral['At_Pos'] = (df_geral['Real_Pos'] / df_geral['Meta_Pos']) * 100
+df_geral['At_Cad'] = np.where(df_geral['Meta_Cad'] <= 1.0, np.where(df_geral['Real_Cad'] > 0, 115.0, 0.0), (df_geral['Real_Cad'] / df_geral['Meta_Cad']) * 100)
 
-periodo = st.sidebar.radio("Selecionar Período:", ["1º Quadrimestre", "Maio/2026"])
-
-if periodo == "1º Quadrimestre":
-    df = pd.DataFrame(data_quad)
-else:
-    df = pd.DataFrame(data_maio)
-
-codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057]
-df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
-
-mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
-if not mostrar_especiais:
-    df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
-
-# -------------------------------------------------------------------------
-# 3. CRITÉRIOS DE CÁLCULO
-# -------------------------------------------------------------------------
-df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
-df['At_Peso'] = (df['Real_Peso'] / df['Meta_Peso']) * 100
-df['At_PM'] = (df['Real_PM'] / df['Meta_PM']) * 100
-df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
-df['At_Cad'] = np.where(df['Meta_Cad'] <= 1.0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
-
-def calcular_pontos_faixa(ating, pt90, pt100, pt110):
+def motor_faixas(ating, pt90, pt100, pt110):
     if ating < 90.0: return 0.0
     elif ating < 100.0: return float(pt90)
     elif ating < 110.0: return float(pt100)
     else: return float(pt110)
 
-df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
-df['P_Peso'] = df['At_Peso'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
-df['P_PM'] = df['At_PM'].apply(lambda x: calcular_pontos_faixa(x, 10, 15, 20))
-df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
-df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
+df_geral['P_Fat'] = df_geral['At_Fat'].apply(lambda x: motor_faixas(x, 5, 10, 15))
+df_geral['P_Peso'] = df_geral['At_Peso'].apply(lambda x: motor_faixas(x, 5, 10, 15))
+df_geral['P_PM'] = df_geral['At_PM'].apply(lambda x: motor_faixas(x, 10, 15, 20))
+df_geral['P_Pos'] = df_geral['At_Pos'].apply(lambda x: motor_faixas(x, 5, 7.5, 10))
+df_geral['P_Cad'] = df_geral['At_Cad'].apply(lambda x: motor_faixas(x, 5, 7.5, 10))
+df_geral['Total'] = df_geral['P_Fat'] + df_geral['P_Peso'] + df_geral['P_PM'] + df_geral['P_Pos'] + df_geral['P_Cad']
 
-df['Pontuacao_Total'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
-df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
-df_ranking.index += 1
+# Ranking Geral Fixo
+df_podio_fixo = df_geral.sort_values(by='Total', ascending=False).reset_index(drop=True)
 
 # -------------------------------------------------------------------------
-# 4. EXIBIÇÃO INDEPENDENTE E RÍGIDA DAS DUAS TABELAS
+# 3. EXIBIÇÃO FIXA: OS CARDS DO TOP 5 ACUMULADO GERAL
 # -------------------------------------------------------------------------
+st.markdown("### 🏆 LÍDERES ACUMULADOS — RANKING GERAL DA CAMPANHA")
+col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
 
-# --- TABELA 1: EXIBIÇÃO DE PONTOS ---
-st.markdown(f"### 📋 TABELA DE PONTOS POR KPI — {periodo.upper()}")
-df_pontos = df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].copy()
-df_pontos.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
-st.dataframe(df_pontos, use_container_width=True)
+# Renderização estável nativa do Streamlit (Sem HTML complexo para não bugar)
+col_t1.metric(label="🥇 1º LUGAR GERAL", value=df_podio_fixo.loc[0, 'Vendedor'], delta=f"{df_podio_fixo.loc[0, 'Total']:.2f} pts")
+col_t2.metric(label="🥈 2º LUGAR GERAL", value=df_podio_fixo.loc[1, 'Vendedor'], delta=f"{df_podio_fixo.loc[1, 'Total']:.2f} pts")
+col_t3.metric(label="🥉 3º LUGAR GERAL", value=df_podio_fixo.loc[2, 'Vendedor'], delta=f"{df_podio_fixo.loc[2, 'Total']:.2f} pts")
+col_t4.metric(label="🏅 4º LUGAR GERAL", value=df_podio_fixo.loc[3, 'Vendedor'], delta=f"{df_podio_fixo.loc[3, 'Total']:.2f} pts")
+col_t5.metric(label="🏅 5º LUGAR GERAL", value=df_podio_fixo.loc[4, 'Vendedor'], delta=f"{df_podio_fixo.loc[4, 'Total']:.2f} pts")
 
 st.write("---")
 
-# --- TABELA 2: EXIBIÇÃO DE PERCENTUAIS ---
-st.markdown(f"### 📊 TABELA DE PERCENTUAIS DE ATINGIMENTO METAS (%)")
-df_percs = df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].copy()
-df_percs.columns = ['CÓDIGO', 'VENDEDOR', 'ATING. FATURAMENTO', 'ATING. PESO KG', 'ATING. PREÇO MÉDIO', 'ATING. POSITIVAÇÃO', 'ATING. CADASTROS']
+# -------------------------------------------------------------------------
+# 4. SEÇÃO DE FILTROS NA BARRA LATERAL (SIDEBAR)
+# -------------------------------------------------------------------------
+st.sidebar.header("⚙️ Filtros Dinâmicos")
+periodo = st.sidebar.radio("Selecionar Período das Tabelas:", ["1º Quadrimestre", "Maio/2026"])
 
-st.dataframe(df_percs.style.format({
-    'ATING. FATURAMENTO': '{:.1f}%', 'ATING. PESO KG': '{:.1f}%', 
-    'ATING. PREÇO MÉDIO': '{:.1f}%', 'ATING. POSITIVAÇÃO': '{:.1f}%', 'ATING. CADASTROS': '{:.1f}%'
-}), use_container_width=True)
+if periodo == "1º Quadrimestre":
+    df_dinamico = pd.DataFrame(data_quad)
+else:
+    df_dinamico = pd.DataFrame(data_maio)
+
+codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057]
+df_dinamico['Categoria'] = np.where(df_dinamico['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
+
+mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação nas Tabelas", value=True)
+if not mostrar_especiais:
+    df_dinamico = df_dinamico[df_dinamico['Categoria'] == 'Padrao'].reset_index(drop=True)
+
+# -------------------------------------------------------------------------
+# 5. PROCESSAMENTO DAS TABELAS DINÂMICAS (FILTRADAS PELO PERÍODO)
+# -------------------------------------------------------------------------
+df_dinamico['At_Fat'] = (df_dinamico['Real_Fat'] / df_dinamico['Meta_Fat']) * 100
+df_dinamico['At_Peso'] = (df_dinamico['Real_Peso'] / df_dinamico['Meta_Peso']) * 100
+df_dinamico['At_PM'] = (df_dinamico['Real_PM'] / df_dinamico['Meta_PM']) * 100
+df_dinamico['At_Pos'] = (df_dinamico['Real_Pos'] / df_dinamico['Meta_Pos']) * 100
+df_dinamico['At_Cad'] = np.where(df_dinamico['Meta_Cad'] <= 1.0, np.where(df_dinamico['Real_Cad'] > 0, 115.0, 0.0), (df_dinamico['Real_Cad'] / df_dinamico['Meta_Cad']) * 100)
+
+df_dinamico['P_Fat'] = df_dinamico['At_Fat'].apply(lambda x: motor_faixas(x, 5, 10, 15))
+df_dinamico['P_Peso'] = df_dinamico['At_Peso'].apply(lambda x: motor_faixas(x, 5, 10, 15))
+df_dinamico['P_PM'] = df_dinamico['At_PM'].apply(lambda x: motor_faixas(x, 10, 15, 20))
+df_dinamico['P_Pos'] = df_dinamico['At_Pos'].apply(lambda x: motor_faixas(x, 5, 7.5, 10))
+df_dinamico['P_Cad'] = df_dinamico['At_Cad'].apply(lambda x: motor_faixas(x, 5, 7.5, 10))
+
+df_dinamico['Pontuacao_Total'] = df_dinamico['P_Fat'] + df_dinamico['P_Peso'] + df_dinamico['P_PM'] + df_dinamico['P_Pos'] + df_dinamico['P_Cad']
