@@ -1,18 +1,18 @@
 import streamlit as st
-import streamlit as st
 
-# Defina a senha aqui
+# 🔐 Defina sua senha aqui
 SENHA_CORRETA = "minha_senha_secreta"
 
-senha = st.text_input("Digite a senha:", type="password")
+# Captura parâmetros da URL
+params = st.experimental_get_query_params()
+senha = params.get("senha", [""])[0]
 
+# Validação
 if senha != SENHA_CORRETA:
-    st.warning("Senha incorreta ou não informada.")
+    st.error("Acesso negado. Informe a senha correta na URL.")
     st.stop()
 
-st.success("✅ Bem-vindo ao painel!")
-
-
+# ✅ Se passou na validação, carrega o painel
 st.set_page_config(layout="wide", page_title="Portal de Performance")
 
 st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>🎯 PORTAL DE CAMPANHAS DE VENDAS</h2>", unsafe_allow_html=True)
