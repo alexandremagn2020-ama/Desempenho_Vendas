@@ -3,7 +3,7 @@ import streamlit as st
 # Tela inicial de login
 senha = st.text_input("Digite a senha:", type="password", key="senha")
 
-if senha != "minha_senha_secreta":
+if senha != "bacon":
     st.warning("Senha incorreta ou não informada.")
     st.stop()
 
