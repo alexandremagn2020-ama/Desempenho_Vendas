@@ -1,6 +1,6 @@
 import streamlit as st
 
-SENHA_CORRETA = "minha_senha_secreta"
+SENHA_CORRETA = "bacon"
 
 def validar_senha():
     senha = st.session_state.get("senha", "")
