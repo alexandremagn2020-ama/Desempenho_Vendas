@@ -3,11 +3,10 @@ import pandas as pd
 import numpy as np
 
 # Configuração de página corporativa ampla
-st.set_page_config(layout="wide", page_title="Painel de Performance Executivo")
+st.set_page_config(layout="wide", page_title="Tabelas de Vendas")
 
-# Título Principal Estilizado
-st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>🏆 PAINEL EXECUTIVO DE PERFORMANCE</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #6B7280;'>Campanha de Vendas — Sistema Estrito de Faixas Fixas por Período</p>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; color: #1E3A8A; font-weight: 700;'>📊 RELATÓRIO CONSOLIDADO DE VENDAS</h2>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #6B7280;'>Visualização Exclusiva de Tabelas de Pontos e Metas</p>", unsafe_allow_html=True)
 st.write("---")
 
 # -------------------------------------------------------------------------
@@ -47,7 +46,7 @@ data_maio = {
 # -------------------------------------------------------------------------
 # 2. SEÇÃO DE FILTROS NA BARRA LATERAL (SIDEBAR)
 # -------------------------------------------------------------------------
-st.sidebar.header("⚙️ Configurações do Painel")
+st.sidebar.header("⚙️ Filtros")
 
 periodo = st.sidebar.radio("Selecionar Período:", ["1º Quadrimestre", "Maio/2026"])
 
@@ -64,7 +63,7 @@ if not mostrar_especiais:
     df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
 
 # -------------------------------------------------------------------------
-# 3. CRITÉRIOS DE CÁLCULO DE METAS (CONVERTIDOS EM TEXTO SEGURO)
+# 3. CRITÉRIOS DE CÁLCULO
 # -------------------------------------------------------------------------
 df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
 df['At_Peso'] = (df['Real_Peso'] / df['Meta_Peso']) * 100
@@ -86,40 +85,26 @@ df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 
 df['Pontuacao_Total'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
-
-# Converter colunas numéricas de atingimento em TEXTO com o símbolo "%" para blindar o Streamlit contra bugs
-df_ranking['FAT_TXT'] = df_ranking['At_Fat'].apply(lambda x: f"{x:.1f}%")
-df_ranking['PESO_TXT'] = df_ranking['At_Peso'].apply(lambda x: f"{x:.1f}%")
-df_ranking['PM_TXT'] = df_ranking['At_PM'].apply(lambda x: f"{x:.1f}%")
-df_ranking['POS_TXT'] = df_ranking['At_Pos'].apply(lambda x: f"{x:.1f}%")
-df_ranking['CAD_TXT'] = df_ranking['At_Cad'].apply(lambda x: f"{x:.1f}%")
+df_ranking.index += 1
 
 # -------------------------------------------------------------------------
-# 4. EXIBIÇÃO DO PODIO (TOP 5 GERAL)
+# 4. EXIBIÇÃO INDEPENDENTE E RÍGIDA DAS DUAS TABELAS
 # -------------------------------------------------------------------------
-if len(df_ranking) > 0:
-    st.markdown(f"### 🏆 OS 5 MELHORES DA CLASSIFICAÇÃO GERAL — {periodo.upper()}")
-    col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
 
-    def render_card(col, posicao, label, bg, border, text_color, dark_text):
-        if len(df_ranking) > posicao:
-            col.markdown(f"<div style='background-color:{bg}; padding:15px; border-radius:10px; border-left:5px solid {border}; text-align:center;'><b style='color:{text_color};'>{label}</b><br><span style='font-size:18px; font-weight:bold; color:{dark_text};'>{df_ranking.loc[posicao, 'Vendedor']}</span><br><b style='color:{dark_text};'>{df_ranking.loc[posicao, 'Pontuacao_Total']:.2f} pts</b></div>", unsafe_allow_html=True)
-        else:
-            col.markdown("<div style='background-color:#F3F4F6; padding:15px; border-radius:10px; text-align:center; color:#9CA3AF;'>Sem dados</div>", unsafe_allow_html=True)
+# --- TABELA 1: EXIBIÇÃO DE PONTOS ---
+st.markdown(f"### 📋 TABELA DE PONTOS POR KPI — {periodo.upper()}")
+df_pontos = df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].copy()
+df_pontos.columns = ['CÓDIGO', 'VENDEDOR', 'PONTUAÇÃO TOTAL', 'PONTOS FAT.', 'PONTOS PESO', 'PONTOS P.M.', 'PONTOS POSIT.', 'PONTOS CADASTROS']
+st.dataframe(df_pontos, use_container_width=True)
 
-    render_card(col_t1, 0, "🥇 1º Lugar", "#FEF3C7", "#F59E0B", "#B45309", "#78350F")
-    render_card(col_t2, 1, "🥈 2º Lugar", "#E5E7EB", "#9CA3AF", "#4B5563", "#1F2937")
-    render_card(col_t3, 2, "🥉 3º Lugar", "#FFEDD5", "#EA580C", "#C2410C", "#7C2D12")
-    render_card(col_t4, 3, "🏅 4º Lugar", "#DBEAFE", "#3B82F6", "#1D4ED8", "#1E3A8A")
-    render_card(col_t5, 4, "🏅 5º Lugar", "#EDE9FE", "#8B5CF6", "#6D28D9", "#4C1D95")
+st.write("---")
 
-    st.write("---")
+# --- TABELA 2: EXIBIÇÃO DE PERCENTUAIS ---
+st.markdown(f"### 📊 TABELA DE PERCENTUAIS DE ATINGIMENTO METAS (%)")
+df_percs = df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].copy()
+df_percs.columns = ['CÓDIGO', 'VENDEDOR', 'ATING. FATURAMENTO', 'ATING. PESO KG', 'ATING. PREÇO MÉDIO', 'ATING. POSITIVAÇÃO', 'ATING. CADASTROS']
 
-    st.markdown("### 🎖️ LÍDERES DESTACADOS POR INDICADOR (KPI)")
-    campeao_fat = df.loc[df['P_Fat'].idxmax()]['Vendedor'] if df['P_Fat'].max() > 0 else "Ninguém"
-    campeao_peso = df.loc[df['P_Peso'].idxmax()]['Vendedor'] if df['P_Peso'].max() > 0 else "Ninguém"
-    campeao_pm = df.loc[df['P_PM'].idxmax()]['Vendedor'] if df['P_PM'].max() > 0 else "Ninguém"
-    campeao_pos = df.loc[df['P_Pos'].idxmax()]['Vendedor'] if df['P_Pos'].max() > 0 else "Ninguém"
-    campeao_cad = df.loc[df['P_Cad'].idxmax()]['Vendedor'] if df['P_Cad'].max() > 0 else "Ninguém"
-
-    col1, col2, col3, col4, col5 = st.columns(5)
+st.dataframe(df_percs.style.format({
+    'ATING. FATURAMENTO': '{:.1f}%', 'ATING. PESO KG': '{:.1f}%', 
+    'ATING. PREÇO MÉDIO': '{:.1f}%', 'ATING. POSITIVAÇÃO': '{:.1f}%', 'ATING. CADASTROS': '{:.1f}%'
+}), use_container_width=True)
