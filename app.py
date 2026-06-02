@@ -49,7 +49,6 @@ data_maio = {
 # -------------------------------------------------------------------------
 st.sidebar.header("⚙️ Configurações do Painel")
 
-# Filtro de Período
 periodo = st.sidebar.radio("Selecionar Período:", ["1º Quadrimestre", "Maio/2026"])
 
 if periodo == "1º Quadrimestre":
@@ -57,10 +56,10 @@ if periodo == "1º Quadrimestre":
 else:
     df = pd.DataFrame(data_maio)
 
-# NOVO FILTRO: Seletor de Tipo de Visualização para Evitar Bugs de Memória
+# NOVO FILTRO DE CONTROLE EXCLUSIVO
 modo_visao = st.sidebar.selectbox("O que deseja exibir?", ["Visualização Completa", "Apenas Pódio e Destaques", "Apenas Tabelas Consolidadas"])
 
-codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80062]
+codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057]
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
@@ -68,7 +67,7 @@ if not mostrar_especiais:
     df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
 
 # -------------------------------------------------------------------------
-# 3. CRITÉRIOS DE CÁLCULO DE METAS
+# 3. CRITÉRIOS DE CÁLCULO (PERCENTUAIS E DEGRAUS FIXOS)
 # -------------------------------------------------------------------------
 df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
 df['At_Peso'] = (df['Real_Peso'] / df['Meta_Peso']) * 100
@@ -92,10 +91,8 @@ df['Pontuacao_Total'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + 
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
 
 # -------------------------------------------------------------------------
-# 4. EXECUÇÃO DA VISUALIZAÇÃO BASEADA NO FILTRO DA SIDEBAR
+# 4. PARTE VISUAL: CARDS DO PODIO (TOP 5)
 # -------------------------------------------------------------------------
-
-# Condição para mostrar os Cartões do Pódio
 if modo_visao in ["Visualização Completa", "Apenas Pódio e Destaques"]:
     if len(df_ranking) > 0:
         st.markdown(f"### 🏆 OS 5 MELHORES DA CLASSIFICAÇÃO GERAL — {periodo.upper()}")
@@ -124,3 +121,4 @@ if modo_visao in ["Visualização Completa", "Apenas Pódio e Destaques"]:
 
         col1, col2, col3, col4, col5 = st.columns(5)
         col1.metric("💰 Faturamento", f"{campeao_fat}", f"{df['P_Fat'].max():.2f} pts")
+        col2.metric("📦 Peso (KG)", f"{campeao_peso}", f"{df['P_Peso'].max():.2f} pts")
