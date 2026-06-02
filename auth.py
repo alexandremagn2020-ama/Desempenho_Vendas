@@ -1,0 +1,10 @@
+import streamlit as st
+
+# 🔐 Defina sua senha aqui
+SENHA_CORRETA = "minha_senha_secreta"
+
+def validar_senha():
+    senha = st.session_state.get("senha", "")
+    if senha != SENHA_CORRETA:
+        st.error("Acesso negado. Volte à página inicial e digite a senha correta.")
+        st.stop()
