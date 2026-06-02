@@ -3,13 +3,12 @@ import streamlit as st
 # 🔐 Defina sua senha aqui
 SENHA_CORRETA = "minha_senha_secreta"
 
-# Captura parâmetros da URL
-params = st.query_params
-senha = params.get("senha", "")
+# Campo de senha
+senha = st.text_input("Digite a senha:", type="password")
 
 # Validação
 if senha != SENHA_CORRETA:
-    st.error("Acesso negado. Informe a senha correta na URL.")
+    st.warning("Senha incorreta ou não informada.")
     st.stop()
 
 # ✅ Se passou na validação, carrega o painel
