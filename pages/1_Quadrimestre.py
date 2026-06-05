@@ -18,7 +18,7 @@ data_quadrimestre = {
         'WANDERSON DA SILVA LIMA', 'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 
         'GILBERT CRISTIAN', 'NATALIA FATIMA', 'JANETE CIRILO', 'RPA', 'Tallison Augusto de Oliveira'
     ],
-    'Meta_Fat': [318880.0, 1171100.0, 1381200.0, 1136600.0, 1396000.0, 1658500.0, 751750.0, 1132500.0, 2315350.0, 2535200.0, 96000.0, 348750.0, 967250.0, 860500.0, 1293350.0, 664000.0, 90000.0, 479800.0, 331200.0, 241500.0, 1.0], # Ajustado 80062 para 1.0 temporário para evitar divisão por zero se não houver meta na planilha
+    'Meta_Fat': [318880.0, 1171100.0, 1381200.0, 1136600.0, 1396000.0, 1658500.0, 751750.0, 1132500.0, 2315350.0, 2535200.0, 96000.0, 348750.0, 967250.0, 860500.0, 1293350.0, 664000.0, 90000.0, 479800.0, 331200.0, 241500.0, 1.0],
     'Real_Fat': [254754.40, 1091928.00, 1232846.85, 970745.58, 1251693.40, 1590120.70, 687613.80, 932907.49, 2280576.70, 2471894.88, 66186.00, 79820.22, 830930.82, 806371.35, 988358.30, 667041.86, 6598.00, 395428.14, 182194.05, 113946.15, 34167.00],
     'Meta_Peso': [17000.0, 70000.0, 81000.0, 65000.0, 80000.0, 91000.0, 48500.0, 60000.0, 115500.0, 105000.0, 4000.0, 17500.0, 54500.0, 51500.0, 69500.0, 37500.0, 5000.0, 24000.0, 18000.0, 12000.0, 1.0],
     'Real_Peso': [14180.00, 67825.00, 73275.00, 56720.00, 73149.00, 87924.00, 45028.00, 50418.00, 115611.50, 102832.00, 2825.00, 4203.00, 47402.00, 47751.00, 63168.00, 38206.00, 530.00, 19999.00, 9969.00, 5370.00, 2750.00],
@@ -31,6 +31,10 @@ data_quadrimestre = {
 }
 
 df = pd.DataFrame(data_quadrimestre)
+
+# ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor
+df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
+
 codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057]
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
@@ -45,7 +49,7 @@ df['At_PM'] = (df['Real_PM'] / df['Meta_PM']) * 100
 df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
 df['At_Cad'] = np.where(df['Meta_Cad'] <= 1.0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
 
-# Regra de Faixas de Pontuação validada com a imagem enviada
+# Regra de Faixas de Pontuação
 def calcular_pontos_faixa(ating, pt90, pt100, pt110):
     if ating < 90.0: return 0.0
     elif ating < 100.0: return float(pt90)
