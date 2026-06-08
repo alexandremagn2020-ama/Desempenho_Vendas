@@ -35,7 +35,7 @@ df = pd.DataFrame(data_quadrimestre)
 # ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor
 df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
-codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057]
+codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057, 80062]
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
