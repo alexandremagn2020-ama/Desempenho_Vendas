@@ -20,7 +20,7 @@ data_junho = {
         'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 'Rota BH', 
         'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 
         'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 'JANETE CIRILO', 
-        'RPA', 'Tallison Augusto de Oliveira', 'VENDEDOR 80063'
+        'RPA', 'Tallison Augusto de Oliveira', 'Marcelo 80063'
     ],
     'Meta_Fat': [
         75200.0, 309700.0, 359100.0, 288750.0, 350000.0, 420900.0, 208000.0, 264600.0, 522000.0, 677600.0, 
