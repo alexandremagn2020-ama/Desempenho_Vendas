@@ -8,12 +8,15 @@ auth.validar_senha()  # bloqueia se não tiver senha correta
 # Título corrigido para a página correspondente
 st.markdown("## Conteúdo da página Julho")
 
+# Lista de códigos identificadores dos vendedores
+lista_codigos = [
+    80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021,
+    80022, 80039, 80048, 80052, 80053, 80055, 80058, 80060, 80061, 80062, 80063
+]
+
 # Dados do mês de Julho consolidados e validados por COD (Metas + Realizados)
 data_julho = {
-    'COD': [
-        80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 
-        80022, 80039, 80048, 80052, 80053, 80055, 80058, 80060, 80061, 80062, 80063
-    ],
+    'COD': lista_codigos,
     'Vendedor': [
         'VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 
         'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 
@@ -70,8 +73,8 @@ df = pd.DataFrame(data_julho)
 df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
 # Identificação das rotas especiais
-codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001]
-df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
+rotas_especiais = [80012, 80021, 80055, 80061, 80022, 80001]
+df['Categoria'] = np.where(df['COD'].isin(rotas_especiais), 'Especiais', 'Padrao')
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
 if not mostrar_especiais:
@@ -84,14 +87,14 @@ df['At_PM'] = (df['Real_PM'] / df['Meta_PM']) * 100
 df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
 df['At_Cad'] = np.where(df['Meta_Cad'] <= 1.0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
 
-# Regra de Faixas de Pontuação conforme tabela de campanha fornececida
+# Regra de Faixas de Pontuação conforme tabela de campanha fornecida
 def calcular_pontos_faixa(ating, pt90, pt100, pt110):
     if ating < 90.0: return 0.0
     elif ating < 100.0: return float(pt90)
     elif ating < 110.0: return float(pt100)
     else: return float(pt110)
 
-df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
+df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontio = calcular_pontos_faixa(x, 5, 10, 15))
 df['P_Peso'] = df['At_Peso'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
 df['P_PM'] = df['At_PM'].apply(lambda x: calcular_pontos_faixa(x, 10, 15, 20))
 df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
