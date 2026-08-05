@@ -84,7 +84,7 @@ df['At_PM'] = (df['Real_PM'] / df['Meta_PM']) * 100
 df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
 df['At_Cad'] = np.where(df['Meta_Cad'] <= 1.0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
 
-# Regra de Faixas de Pontuação conforme tabela de campanha fornecida
+# Regra de Faixas de Pontuação conforme tabela de campanha fornececida
 def calcular_pontos_faixa(ating, pt90, pt100, pt110):
     if ating < 90.0: return 0.0
     elif ating < 100.0: return float(pt90)
