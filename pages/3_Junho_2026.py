@@ -6,7 +6,7 @@ import auth
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
 # Título corrigido para a página correspondente
-st.markdown("## Conteúdo da página Junho")
+st.markdown("## Ranking Desempenho de Junho")
 
 # Dados do mês de Junho consolidados e validados por COD (Metas + Realizados)
 data_junho = {
