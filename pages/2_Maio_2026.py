@@ -6,7 +6,7 @@ import auth
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
 # Título corrigido para a página correspondente
-st.markdown("## Conteúdo da página Maio")
+st.markdown("## Ranking Desempenho de Maio")
 
 # Dados do mês de Maio atualizados e validados com as tabelas fornecidas
 data_maio = {
