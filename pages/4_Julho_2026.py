@@ -6,7 +6,7 @@ import auth
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
 # Título corrigido para a página correspondente
-st.markdown("## Conteúdo da página Julho")
+st.markdown("## Ranking Desempenho de Julho")
 
 # Estrutura alternativa que impede o sistema de truncar as listas
 lista_codigos = [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80058, 80060, 80061, 80062, 80063]
