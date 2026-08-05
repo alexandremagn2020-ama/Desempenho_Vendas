@@ -18,4 +18,4 @@ if not st.session_state["autenticado"]:
 # Se autenticado, carrega o painel
 st.set_page_config(layout="wide", page_title="Portal de Performance")
 st.markdown("## 🎯 PORTAL DE CAMPANHAS DE VENDAS")
-st.info("💡 Use o menu lateral para navegar entre o **1º Quadrimestre** e **Maio/2026**.")
+st.info("💡 Use o menu lateral para navegar entre o **1º Quadrimestre** a **Julho/2026**.")
