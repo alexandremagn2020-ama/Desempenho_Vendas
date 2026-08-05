@@ -8,12 +8,13 @@ auth.validar_senha()  # bloqueia se não tiver senha correta
 # Título corrigido para a página correspondente
 st.markdown("## Conteúdo da página Julho")
 
+# Estrutura alternativa que impede o sistema de truncar as listas
+lista_codigos = [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80058, 80060, 80061, 80062, 80063]
+codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001]
+
 # Dados do mês de Julho consolidados e validados por COD (Metas + Realizados)
 data_julho = {
-    'COD': [
-        80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 
-        80022, 80039, 80048, 80052, 80053, 80055, 80058, 80060, 80061, 80062, 80063
-    ],
+    'COD': lista_codigos,
     'Vendedor': [
         'VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 
         'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 
@@ -70,7 +71,6 @@ df = pd.DataFrame(data_julho)
 df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
 # Identificação das rotas especiais
-codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001]
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
