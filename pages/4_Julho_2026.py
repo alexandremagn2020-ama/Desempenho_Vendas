@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit st
 import pandas as pd
 import numpy as np
 import auth
@@ -98,7 +98,9 @@ df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 
 df['Pontuacao_Total'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
-df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
+
+# Ordenação considerando a Pontuação Total e o Atingimento de Preço Médio (At_PM) como desempate
+df_ranking = df.sort_values(by=['Pontuacao_Total', 'At_PM'], ascending=[False, False]).reset_index(drop=True)
 
 # Bloco visual dos pódios (Top 5)
 if len(df_ranking) > 0:
