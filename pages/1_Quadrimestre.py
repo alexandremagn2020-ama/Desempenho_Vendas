@@ -13,9 +13,16 @@ except Exception:
 
 st.markdown("## Ranking Desempenho do Quadrimestre 1")
 
+# Estrutura de bypass que impede o sistema de truncar ou apagar as listas numéricas
+texto_codigos = ["80001", "80002", "80003", "80005", "80006", "80007", "80010", "80011", "80012", "80021", "80022", "80039", "80048", "80052", "80053", "80055", "80057", "80058", "80060", "80061", "80062"]
+texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001", "80057", "80062"]
+
+lista_codigos = list(map(int, texto_codigos))
+codigos_filtrados = list(map(int, texto_filtrados))
+
 # Dados consolidados extraídos das imagens de Realizado e Meta
 data_quadrimestre = {
-    'COD':,
+    'COD': lista_codigos,
     'Vendedor': [
         'VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 
         'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 
@@ -41,7 +48,6 @@ df = pd.DataFrame(data_quadrimestre)
 # ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor
 df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
-codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80057, 80062]
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Todos Vendedores", value=False)
