@@ -5,7 +5,7 @@ import auth
 
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
-st.markdown("## Conteúdo da página Quadrimestre")
+st.markdown("## Conteúdo da página Quadrimestre 1")
 
 # Dados consolidados extraídos das imagens de Realizado e Meta
 data_quadrimestre = {
@@ -76,7 +76,7 @@ if len(df_ranking) > 0:
     st.write("---")
 
 df_ranking.index += 1
-st.markdown("### 📋 TABELA DE PONTOS POR KPI (ACUMULADO QUADRIMESTRE)")
+st.markdown("### 📋 TABELA DE PONTOS POR KPI (ACUMULADO QUADRIMESTRE 1)")
 st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Total': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
 st.write("---")
 st.markdown("### 📊 PERCENTUAIS DE ATINGIMENTO METAS (%)")
