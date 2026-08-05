@@ -8,7 +8,7 @@ auth.validar_senha()  # bloqueia se não tiver senha correta
 # Título corrigido para a página correspondente
 st.markdown("## Ranking Desempenho de Julho")
 
-# Estrutura de listas estáveis
+# Declaração explícita de listas numéricas para evitar falhas de sintaxe
 lista_codigos = [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80058, 80060, 80061, 80062, 80063]
 codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001]
 
@@ -75,7 +75,7 @@ df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padr
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
 if not mostrar_especiais:
-    df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
+    df = df[df['Categoria'] == 'Especiais'].reset_index(drop=True)
 
 # Cálculo de Atingimento (%)
 df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
@@ -97,37 +97,34 @@ df['P_PM'] = df['At_PM'].apply(lambda x: calcular_pontos_faixa(x, 10, 15, 20))
 df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
 
-# Pontuação base vinda dos KPIs
+# Pontuação líquida acumulada dos KPIs
 df['Pontuacao_Base'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
 
-# --- LÓGICA DE DESEMPATE POR PREÇO MÉDIO ---
-# Identifica quais pontuações estão repetidas (empates)
-pontuacoes_duplicadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
-
-# Cria o bônus de desempate e a marcação visual
+# --- SISTEMA DE DESEMPATE POR MAIOR PREÇO MÉDIO REALIZADO ---
 df['Bonus_Desempate'] = 0.0
 df['Marcacao'] = ""
 
-for ponts in pontuacoes_duplicadas:
-    if ponts > 0: # Ignora empates em 0 pontos
-        idx_empatados = df[df['Pontuacao_Base'] == ponts].index
-        # Encontra qual dos empatados tem o maior atingimento de Preço Médio (At_PM)
-        maior_at_pm = df.loc[idx_empatados, 'At_PM'].max()
-        idx_vencedor = df[(df['Pontuacao_Base'] == ponts) & (df['At_PM'] == maior_at_pm)].index
+# Identifica as notas dos KPIs que geraram empates na lista
+pontuacoes_empatadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
+
+for nota in pontuacoes_empatadas:
+    if nota > 0:  # Ignora desempates para quem zerou tudo
+        indices_grupo = df[df['Pontuacao_Base'] == nota].index
+        # Avalia qual vendedor do grupo de empate obteve o maior Preço Médio Realizado (Real_PM)
+        maior_preco_medio = df.loc[indices_grupo, 'Real_PM'].max()
+        idx_vencedor = df[(df['Pontuacao_Base'] == nota) & (df['Real_PM'] == maior_preco_medio)].index
         
-        # Concede um micro bônus para mudar a ordenação e insere o aviso visual
+        # Concede microvantagem e aplica a figurinha de alvo ao nome
         df.loc[idx_vencedor, 'Bonus_Desempate'] = 0.01
-        df.loc[idx_vencedor, 'Marcacao'] = " 🎯(Desempate PM)"
+        df.loc[idx_vencedor, 'Marcacao'] = " 🎯"
 
-# A pontuação total final computa o bônus oculto para ordenar
-df['Pontuacao_Total'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
+# O DataFrame calcula a nota final de ordenação somando o bônus
+df['Pontuacao_Ordenada'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
+df_ranking = df.sort_values(by='Pontuacao_Ordenada', ascending=False).reset_index(drop=True)
 
-# Ordena o ranking final de forma precisa
-df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
-
-# Aplica a figurinha de aviso visual no nome do vendedor vencedor do desempate
+# Insere a marcação visual nos nomes ordenados
 df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
-# -------------------------------------------
+# ------------------------------------------------------------
 
 # Bloco visual dos pódios (Top 5)
 if len(df_ranking) > 0:
