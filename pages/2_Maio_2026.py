@@ -42,7 +42,7 @@ df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padr
 
 mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
 if not mostrar_especiais:
-    df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
+    df = df[df['Categoria'] == 'Especiais'].reset_index(drop=True)
 
 # Cálculo de Atingimento (%)
 df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
