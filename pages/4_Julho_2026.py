@@ -73,7 +73,7 @@ df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).stri
 # Identificação das rotas especiais
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
-mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=False)
+mostrar_especiais = st.sidebar.checkbox("Mostrar Todos Vendedores", value=False)
 if not mostrar_especiais:
     df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
 
