@@ -5,7 +5,7 @@ import auth
 
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
-st.markdown("## Conteúdo da página Quadrimestre 1")
+st.markdown("## Ranking Desempenho do Quadrimestre 1")
 
 # Dados consolidados extraídos das imagens de Realizado e Meta
 data_quadrimestre = {
