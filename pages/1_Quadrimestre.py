@@ -7,6 +7,10 @@ auth.validar_senha()  # bloqueia se não tiver senha correta
 
 st.markdown("## Ranking Desempenho do Quadrimestre 1")
 
+# 🟥 LINHA DA LOGO: Adiciona sua imagem no topo da barra lateral esquerda
+# Certifique-se de salvar o arquivo como "logo.png" na mesma pasta do script
+st.sidebar.image("logo.png", use_container_width=True)
+
 # Dados consolidados extraídos das imagens de Realizado e Meta
 data_quadrimestre = {
     'COD': [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80057, 80058, 80060, 80061, 80062],
