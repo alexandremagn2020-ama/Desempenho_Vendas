@@ -9,7 +9,7 @@ st.markdown("## Ranking Desempenho do Quadrimestre 1")
 
 # 🟥 LINHA DA LOGO: Adiciona sua imagem no topo da barra lateral esquerda
 # Certifique-se de salvar o arquivo como "logo.png" na mesma pasta do script
-st.sidebar.image("logo.png", use_container_width=True)
+st.sidebar.image("../logo.png", use_container_width=True)
 
 # Dados consolidados extraídos das imagens de Realizado e Meta
 data_quadrimestre = {
