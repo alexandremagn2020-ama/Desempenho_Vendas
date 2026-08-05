@@ -73,9 +73,9 @@ df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).stri
 # Identificação das rotas especiais
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
-mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
+mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=False)
 if not mostrar_especiais:
-    df = df[df['Categoria'] == 'Especiais'].reset_index(drop=True)
+    df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
 
 # Cálculo de Atingimento (%)
 df['At_Fat'] = (df['Real_Fat'] / df['Meta_Fat']) * 100
