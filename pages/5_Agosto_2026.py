@@ -137,7 +137,7 @@ for nota in pontuacoes_empatadas:
         df.loc[idx_vencedor, 'Bonus_Desempate'] = 0.01
         df.loc[idx_vencedor, 'Marcacao'] = " 🎯"
 
-# O DataFrame calcula a nota final de ordenação somando o bônus para gerar a Pontuacao_Total exata de classificação
+# O DataFrame calcula a nota final de classificação somando o bônus oculto
 df['Pontuacao_Total'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
 
@@ -145,19 +145,19 @@ df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(d
 df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
 # ------------------------------------------------------------
 
-# Bloco visual dos pódios (Top 5) usando a coluna unificada de classificação
+# Bloco visual dos pódios (Top 5) exibindo a nota final do desempate para consistência
 if len(df_ranking) > 0:
     col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
-    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 3: col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 4: col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Base']:.2f} pts")
+    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 3: col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 4: col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts")
     st.write("---")
 
 df_ranking.index += 1
 st.markdown("### 📋 TABELA DE PONTOS POR KPI (AGOSTO)")
-st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Base', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Base': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
+st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Total': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
 st.write("---")
 st.markdown("### 📊 PERCENTUAIS DE ATINGIMENTO METAS (%)")
 st.dataframe(df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].style.format({'At_Fat': '{:.1f}%', 'At_Peso': '{:.1f}%', 'At_PM': '{:.1f}%', 'At_Pos': '{:.1f}%', 'At_Cad': '{:.1f}%'}), use_container_width=True)
