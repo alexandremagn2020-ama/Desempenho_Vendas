@@ -1,35 +1,34 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
-import streamlit as st
 import auth
 
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
-# 🎯 SISTEMA DE CARREGAMENTO DIRETO DA RAIZ GLOBAL
+# Título correspondente ao mês atual
+st.markdown("## Ranking Desempenho de Agosto")
+
+# 🎯 SISTEMA DE CARREGAMENTO DIRETO DA LOGO
 try:
     st.sidebar.image("logo.png", use_container_width=True)
 except Exception:
     st.sidebar.warning("⚠️ Arquivo 'logo.png' não encontrado no diretório do servidor.")
 
-st.markdown("## Ranking Desempenho de Agosto")
+# Declaração das listas numéricas baseadas nas imagens de meta e realizado de agosto
+lista_codigos = [80001, 80002, 80003, 80005, 80006, 80007, 80010, 80011, 80012, 80021, 80022, 80039, 80048, 80052, 80053, 80055, 80058, 80060, 80061, 80062, 80063]
+codigos_filtrados = [80012, 80021, 80055, 80061, 80022, 80001, 80062]
 
-# Estrutura de bypass que impede o sistema de truncar ou apagar as listas numéricas
-texto_codigos = ["80001", "80002", "80003", "80005", "80006", "80007", "80010", "80011", "80012", "80021", "80022", "80039", "80048", "80052", "80053", "80055", "80058", "80060", "80061", "80062", "80063"]
-texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001", "80062"]
-
-lista_codigos = list(map(int, texto_codigos))
-codigos_filtrados = list(map(int, texto_filtrados))
-
-# Dados consolidados de Agosto (Metas anteriores + Realizados extraídos da imagem)
+# Dados do mês de Agosto consolidados e validados por COD (Metas + Realizados)
 data_agosto = {
     'COD': lista_codigos,
     'Vendedor': [
         'VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 
         'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 
         'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 
-        'Rota BH', 'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 
-        'WANDERSON DA SILVA LIMA', 'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 
-        'NATALIA FATIMA', 'JANETE CIRILO', 'RPA', 'Tallison Augusto de Oliveira', 'VENDEDOR 80063'
+        'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 
+        'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 
+        'JANETE CIRILO', 'Rota BH', 'Rota BH - Interior de Minas', 'RPA', 
+        'Tallison Augusto de Oliveira', 'VENDEDOR 80063'
     ],
     'Meta_Fat': [
         4000.0, 20000.0, 22000.0, 17500.0, 21000.0, 23000.0, 14500.0, 15500.0, 30000.0, 
@@ -86,11 +85,12 @@ data_agosto = {
 df = pd.DataFrame(data_agosto)
 
 # ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor
-df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split() if str(x).strip() else "")
+df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
+# Identificação das rotas especiais
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
-mostrar_especiais = st.sidebar.checkbox("Mostrar Rotas Especiais / Homologação", value=True)
+mostrar_especiais = st.sidebar.checkbox("Mostrar Todos Vendedores", value=False)
 if not mostrar_especiais:
     df = df[df['Categoria'] == 'Padrao'].reset_index(drop=True)
 
@@ -121,19 +121,25 @@ df['Pontuacao_Base'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + d
 df['Bonus_Desempate'] = 0.0
 df['Marcacao'] = ""
 
+# Identifica as notas dos KPIs que geraram empates na lista
 pontuacoes_empatadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
 
 for nota in pontuacoes_empatadas:
-    if nota > 0:
+    if nota > 0:  # Ignora desempates para quem zerou tudo
         indices_grupo = df[df['Pontuacao_Base'] == nota].index
+        # Avalia qual vendedor do grupo de empate obteve o maior Preço Médio Realizado (Real_PM)
         maior_preco_medio = df.loc[indices_grupo, 'Real_PM'].max()
         idx_vencedor = df[(df['Pontuacao_Base'] == nota) & (df['Real_PM'] == maior_preco_medio)].index
         
+        # Concede microvantagem e aplica a figurinha de alvo ao nome
         df.loc[idx_vencedor, 'Bonus_Desempate'] = 0.01
         df.loc[idx_vencedor, 'Marcacao'] = " 🎯"
 
+# O DataFrame calcula a nota final de ordenação somando o bônus
 df['Pontuacao_Ordenada'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
 df_ranking = df.sort_values(by='Pontuacao_Ordenada', ascending=False).reset_index(drop=True)
+
+# Insere a marcação visual nos nomes ordenados
 df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
 # ------------------------------------------------------------
 
