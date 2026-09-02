@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import streamlit as st
+import streamlit st
 import auth
 
 auth.validar_senha()  # bloqueia se não tiver senha correta
@@ -82,35 +82,41 @@ df['Pontuacao_Base'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + d
 df['Bonus_Desempate'] = 0.0
 df['Marcacao'] = ""
 
+# Identifica as notas dos KPIs que geraram empates na lista
 pontuacoes_empatadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
 
 for nota in pontuacoes_empatadas:
-    if nota > 0:
+    if nota > 0:  # Ignora desempates para quem zerou tudo
         indices_grupo = df[df['Pontuacao_Base'] == nota].index
+        # Avalia qual vendedor do grupo de empate obteve o maior Preço Médio Realizado (Real_PM)
         maior_preco_medio = df.loc[indices_grupo, 'Real_PM'].max()
         idx_vencedor = df[(df['Pontuacao_Base'] == nota) & (df['Real_PM'] == maior_preco_medio)].index
         
+        # Concede microvantagem e aplica a figurinha de alvo ao nome
         df.loc[idx_vencedor, 'Bonus_Desempate'] = 0.01
         df.loc[idx_vencedor, 'Marcacao'] = " 🎯"
 
-df['Pontuacao_Ordenada'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
-df_ranking = df.sort_values(by='Pontuacao_Ordenada', ascending=False).reset_index(drop=True)
+# O DataFrame calcula a nota final de ordenação somando o bônus
+df['Pontuacao_Total'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
+df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
+
+# Insere a marcação visual nos nomes ordenados
 df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
 # ------------------------------------------------------------
 
 # Bloco visual dos pódios (Top 5)
 if len(df_ranking) > 0:
     col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
-    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 3: col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 4: col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Base']:.2f} pts")
+    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 3: col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 4: col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts")
     st.write("---")
 
 df_ranking.index += 1
 st.markdown("### 📋 TABELA DE PONTOS POR KPI (ACUMULADO QUADRIMESTRE 2)")
-st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Base', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Base': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
+st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Total': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
 st.write("---")
 st.markdown("### 📊 PERCENTUAIS DE ATINGIMENTO METAS (%)")
 st.dataframe(df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].style.format({'At_Fat': '{:.1f}%', 'At_Peso': '{:.1f}%', 'At_PM': '{:.1f}%', 'At_Pos': '{:.1f}%', 'At_Cad': '{:.1f}%'}), use_container_width=True)
