@@ -20,7 +20,7 @@ texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001"]
 lista_codigos = list(map(int, texto_codigos))
 codigos_filtrados = list(map(int, texto_filtrados))
 
-# SOMA CONSOLIDADA DO SEGUNDO QUADRIMESTRE (MAIO + JUNHO + JULHO + AGOSTO)
+# Dados do segundo quadrimestre (Maio + Junho + Julho + Agosto)
 data_quadrimestre2 = {
     'COD': lista_codigos,
     'Vendedor': [
@@ -46,7 +46,7 @@ data_quadrimestre2 = {
 
 df = pd.DataFrame(data_quadrimestre2)
 
-# ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor
+# ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor (Padrão de Julho)
 df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
@@ -82,25 +82,19 @@ df['Pontuacao_Base'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + d
 df['Bonus_Desempate'] = 0.0
 df['Marcacao'] = ""
 
-# Identifica as notas dos KPIs que geraram empates na lista
 pontuacoes_empatadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
 
 for nota in pontuacoes_empatadas:
-    if nota > 0:  # Ignora desempates para quem zerou tudo
+    if nota > 0:
         indices_grupo = df[df['Pontuacao_Base'] == nota].index
-        # Avalia qual vendedor do grupo de empate obteve o maior Preço Médio Realizado (Real_PM)
         maior_preco_medio = df.loc[indices_grupo, 'Real_PM'].max()
         idx_vencedor = df[(df['Pontuacao_Base'] == nota) & (df['Real_PM'] == maior_preco_medio)].index
         
-        # Concede microvantagem e aplica a figurinha de alvo ao nome
         df.loc[idx_vencedor, 'Bonus_Desempate'] = 0.01
         df.loc[idx_vencedor, 'Marcacao'] = " 🎯"
 
-# O DataFrame calcula a nota final de ordenação somando o bônus
 df['Pontuacao_Total'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
-
-# Insere a marcação visual nos nomes ordenados
 df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
 # ------------------------------------------------------------
 
