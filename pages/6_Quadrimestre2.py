@@ -20,17 +20,16 @@ texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001"]
 lista_codigos = list(map(int, texto_codigos))
 codigos_filtrados = list(map(int, texto_filtrados))
 
-# Dados do segundo quadrimestre (Maio + Junho + Julho + Agosto)
+# Dados do segundo quadrimestre consolidando (Maio + Junho + Julho + Agosto) perfeitamente ordenados por COD igual a Julho
 data_quadrimestre2 = {
     'COD': lista_codigos,
     'Vendedor': [
         'VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 
         'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 
-        'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 
-        'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 
-        'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 
-        'JANETE CIRILO', 'Rota BH', 'Rota BH - Interior de Minas', 'RPA', 
-        'Tallison Augusto de Oliveira', 'VENDEDOR 80063'
+        'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 'Rota BH', 
+        'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 
+        'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 'JANETE CIRILO', 
+        'RPA', 'Tallison Augusto de Oliveira', 'VENDEDOR 80063'
     ],
     'Meta_Fat': [201600.0, 1175500.0, 1426400.0, 1061900.0, 1328550.0, 1522000.0, 807500.0, 969600.0, 1623000.0, 101100.0, 912100.0, 842200.0, 1161200.0, 269500.0, 457500.0, 444500.0, 1373600.0, 24000.0, 248000.0, 166000.0, 121000.0],
     'Real_Fat': [248177.05, 1132333.32, 1316356.65, 753443.05, 1306335.22, 1663758.70, 852723.95, 1023775.79, 2276592.50, 68061.30, 961403.50, 824737.25, 1204014.20, 393428.14, 545417.85, 344840.42, 694983.00, 21504.00, 374437.30, 50216.50, 46956.50],
