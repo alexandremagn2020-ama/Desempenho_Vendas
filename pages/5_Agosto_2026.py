@@ -16,22 +16,21 @@ except Exception:
 
 # Estrutura em formato de texto para blindar o código contra o filtro de segurança
 texto_codigos = ["80001", "80002", "80003", "80005", "80006", "80007", "80010", "80011", "80012", "80021", "80022", "80039", "80048", "80052", "80053", "80055", "80058", "80060", "80061", "80062", "80063"]
-texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001", "80062"]
+texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001"]
 
 lista_codigos = list(map(int, texto_codigos))
 codigos_filtrados = list(map(int, texto_filtrados))
 
-# Dados do mês de Agosto consolidados e validados por COD (Metas + Realizados)
+# Dados do mês de Agosto consolidados e validados por COD (Sequência de Vendedores idêntica a Julho)
 data_agosto = {
     'COD': lista_codigos,
     'Vendedor': [
         'VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 
         'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 
-        'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 
-        'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 
-        'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 
-        'JANETE CIRILO', 'Rota BH', 'Rota BH - Interior de Minas', 'RPA', 
-        'Tallison Augusto de Oliveira', 'VENDEDOR 80063'
+        'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 'Rota BH', 
+        'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 
+        'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 'JANETE CIRILO', 
+        'RPA', 'Tallison Augusto de Oliveira', 'VENDEDOR 80063'
     ],
     'Meta_Fat': [
         4000.0, 20000.0, 22000.0, 17500.0, 21000.0, 23000.0, 14500.0, 15500.0, 30000.0, 
@@ -149,16 +148,16 @@ df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
 # Bloco visual dos pódios (Top 5) usando a coluna unificada de classificação
 if len(df_ranking) > 0:
     col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
-    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts")
-    if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts")
-    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts")
-    if len(df_ranking) > 3: col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts")
-    if len(df_ranking) > 4: col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts")
+    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Base']:.2f} pts")
+    if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Base']:.2f} pts")
+    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Base']:.2f} pts")
+    if len(df_ranking) > 3: col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Base']:.2f} pts")
+    if len(df_ranking) > 4: col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Base']:.2f} pts")
     st.write("---")
 
 df_ranking.index += 1
 st.markdown("### 📋 TABELA DE PONTOS POR KPI (AGOSTO)")
-st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Total': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
+st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Base', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Base': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
 st.write("---")
 st.markdown("### 📊 PERCENTUAIS DE ATINGIMENTO METAS (%)")
 st.dataframe(df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].style.format({'At_Fat': '{:.1f}%', 'At_Peso': '{:.1f}%', 'At_PM': '{:.1f}%', 'At_Pos': '{:.1f}%', 'At_Cad': '{:.1f}%'}), use_container_width=True)
