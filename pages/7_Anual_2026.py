@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-import auth
+import auth 
 
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
