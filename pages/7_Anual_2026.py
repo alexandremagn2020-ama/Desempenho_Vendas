@@ -117,3 +117,87 @@ df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
 df['At_Cad'] = np.where(df['Meta_Cad'] <= 1.0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
 
 # Regra de Faixas de Pontuação conforme regulamento da campanha
+def calcular_pontos_faixa(ating, pt90, pt100, pt110):
+    if ating < 90.0:
+        return 0.0
+    elif ating < 100.0:
+        return float(pt90)
+    elif ating < 110.0:
+        return float(pt100)
+    else:
+        return float(pt110)
+
+
+df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
+
+df['P_Peso'] = df['At_Peso'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
+
+df['P_PM'] = df['At_PM'].apply(lambda x: calcular_pontos_faixa(x, 10, 15, 20))
+
+df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
+
+df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
+
+
+# Pontuação líquida acumulada dos KPIs
+df['Pontuacao_Base'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
+
+
+# --- SISTEMA DE DESEMPATE POR MAIOR PREÇO MÉDIO REALIZADO DO ANO ---
+df['Bonus_Desempate'] = 0.0
+df['Marcacao'] = ""
+
+pontuacoes_empatadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
+
+
+for nota in pontuacoes_empatadas:
+    if nota > 0:
+        indices_grupo = df[df['Pontuacao_Base'] == nota].index
+        maior_preco_medio = df.loc[indices_grupo, 'Real_PM'].max()
+        idx_vencedor = df[(df['Pontuacao_Base'] == nota) & (df['Real_PM'] == maior_preco_medio)].index
+        
+        df.loc[idx_vencedor, 'Bonus_Desempate'] = 0.01
+        df.loc[idx_vencedor, 'Marcacao'] = " 🎯"
+
+
+df['Pontuacao_Total'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
+
+df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
+
+df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
+# ------------------------------------------------------------
+
+
+# Bloco visual dos pódios (Top 5)
+if len(df_ranking) > 0:
+    col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
+    
+    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts")
+    
+    if len(df_ranking) > 1:
+        col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts")
+        
+    if len(df_ranking) > 2:
+        col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts")
+        
+    if len(df_ranking) > 3:
+        col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts")
+        
+    if len(df_ranking) > 4:
+        col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts")
+        
+    st.write("---")
+
+
+df_ranking.index += 1
+
+st.markdown("### 📋 TABELA DE PONTOS POR KPI (CONSOLIDADO ANUAL)")
+
+st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Total': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
+
+st.write("---")
+
+st.markdown("### 📊 PERCENTUAIS DE ATINGIMENTO METAS (%)")
+
+st.dataframe(df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].style.format({'At_Fat': '{:.1f}%', 'At_Peso': '{:.1f}%', 'At_PM': '{:.1f}%', 'At_Pos': '{:.1f}%', 'At_Cad': '{:.1f}%'}), use_container_width=True)
+
