@@ -20,7 +20,7 @@ texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001"]
 lista_codigos = list(map(int, texto_codigos))
 codigos_filtrados = list(map(int, texto_filtrados))
 
-# --- DICIONÁRIOS DE DADOS DOS DOIS QUADRIMESTRES ---
+# --- DICIONÁRIOS DE DADOS DOS DOES QUADRIMESTRES ---
 data_q1 = {
     'COD': lista_codigos,
     'Meta_Fat': [318880.0, 1171100.0, 1381200.0, 1136600.0, 1396000.0, 1658500.0, 751750.0, 1132500.0, 2315350.0, 2535200.0, 96000.0, 348750.0, 967250.0, 860500.0, 1293350.0, 664000.0, 479800.0, 331200.0, 241500.0, 1.0, 0.0],
@@ -68,24 +68,30 @@ df_ano = pd.DataFrame({
 df_ano = df_ano.merge(df_q1[['COD', 'Meta_Fat', 'Real_Fat', 'Meta_Peso', 'Real_Peso', 'Meta_Pos', 'Real_Pos', 'Meta_Cad', 'Real_Cad']], on='COD', how='left')
 df_ano = df_ano.merge(df_q2[['COD', 'Meta_Fat', 'Real_Fat', 'Meta_Peso', 'Real_Peso', 'Meta_Pos', 'Real_Pos', 'Meta_Cad', 'Real_Cad']], on='COD', suffixes=('_q1', '_q2'), how='left')
 
-df = pd.DataFrame()
-df['Meta_Fat'] = df_ano['Meta_Fat_q1'].fillna(0) + df_ano['Meta_Fat_q2'].fillna(0)
-df['Real_Fat'] = df_ano['Real_Fat_q1'].fillna(0) + df_ano['Real_Fat_q2'].fillna(0)
-df['Meta_Peso'] = df_ano['Meta_Peso_q1'].fillna(0) + df_ano['Meta_Peso_q2'].fillna(0)
-df['Real_Peso'] = df_ano['Real_Peso_q1'].fillna(0) + df_ano['Real_Peso_q2'].fillna(0)
-df['Meta_Pos'] = df_ano['Meta_Pos_q1'].fillna(0) + df_ano['Meta_Pos_q2'].fillna(0)
-df['Real_Pos'] = df_ano['Real_Pos_q1'].fillna(0) + df_ano['Real_Pos_q2'].fillna(0)
-df['Meta_Cad'] = df_ano['Meta_Cad_q1'].fillna(0) + df_ano['Meta_Cad_q2'].fillna(0)
-df['Real_Cad'] = df_ano['Real_Cad_q1'].fillna(0) + df_ano['Real_Cad_q2'].fillna(0)
+# Consolidação estrutural em dicionário nativo antes de gerar o DataFrame
+data_consolidadas = {
+    'COD': df_ano['COD'],
+    'Vendedor': df_ano['Vendedor'],
+    'Meta_Fat': df_ano['Meta_Fat_q1'].fillna(0) + df_ano['Meta_Fat_q2'].fillna(0),
+    'Real_Fat': df_ano['Real_Fat_q1'].fillna(0) + df_ano['Real_Fat_q2'].fillna(0),
+    'Meta_Peso': df_ano['Meta_Peso_q1'].fillna(0) + df_ano['Meta_Peso_q2'].fillna(0),
+    'Real_Peso': df_ano['Real_Peso_q1'].fillna(0) + df_ano['Real_Peso_q2'].fillna(0),
+    'Meta_Pos': df_ano['Meta_Pos_q1'].fillna(0) + df_ano['Meta_Pos_q2'].fillna(0),
+    'Real_Pos': df_ano['Real_Pos_q1'].fillna(0) + df_ano['Real_Pos_q2'].fillna(0),
+    'Meta_Cad': df_ano['Meta_Cad_q1'].fillna(0) + df_ano['Meta_Cad_q2'].fillna(0),
+    'Real_Cad': df_ano['Real_Cad_q1'].fillna(0) + df_ano['Real_Cad_q2'].fillna(0)
+}
 
 df_ano = df_ano.merge(df_q1[['COD', 'Meta_PM', 'Real_PM']], on='COD', how='left')
 df_ano = df_ano.merge(df_q2[['COD', 'Meta_PM', 'Real_PM']], on='COD', suffixes=('_q1', '_q2'), how='left')
-df['Meta_PM'] = (df_ano['Meta_PM_q1'].fillna(0) + df_ano['Meta_PM_q2'].fillna(0)) / 2
-df['Real_PM'] = (df_ano['Real_PM_q1'].fillna(0) + df_ano['Real_PM_q2'].fillna(0)) / 2
 
-# ✂️ Filtro corrigido de primeiro nome (garante o retorno em formato String pura)
-df['Vendedor'] = df_ano['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
-df['COD'] = df_ano['COD']
+data_consolidadas['Meta_PM'] = (df_ano['Meta_PM_q1'].fillna(0) + df_ano['Meta_PM_q2'].fillna(0)) / 2
+data_consolidadas['Real_PM'] = (df_ano['Real_PM_q1'].fillna(0) + df_ano['Real_PM_q2'].fillna(0)) / 2
+
+df = pd.DataFrame(data_consolidadas)
+
+# ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor (Formato estável de Julho)
+df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
 
@@ -120,6 +126,7 @@ df['Pontuacao_Base'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + d
 df['Bonus_Desempate'] = 0.0
 df['Marcacao'] = ""
 
+# Identifica as notas dos KPIs que geraram empates na lista
 pontuacoes_empatadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
 
 for nota in pontuacoes_empatadas:
@@ -141,4 +148,4 @@ if len(df_ranking) > 0:
     col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
     col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts")
     if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts")
-    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts")
+
