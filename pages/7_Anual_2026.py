@@ -83,7 +83,7 @@ df_ano = df_ano.merge(df_q2[['COD', 'Meta_PM', 'Real_PM']], on='COD', suffixes=(
 df['Meta_PM'] = (df_ano['Meta_PM_q1'].fillna(0) + df_ano['Meta_PM_q2'].fillna(0)) / 2
 df['Real_PM'] = (df_ano['Real_PM_q1'].fillna(0) + df_ano['Real_PM_q2'].fillna(0)) / 2
 
-# ✂️ Ajuste do filtro para retornar string em vez de lista
+# ✂️ Filtro corrigido de primeiro nome (garante o retorno em formato String pura)
 df['Vendedor'] = df_ano['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 df['COD'] = df_ano['COD']
 
