@@ -51,11 +51,11 @@ data_q1_raw = {
     'Real_Cad': list(map(float, real_cad_q1_str))
 }
 
-# Reconstrução textual das chaves numéricas do Quadrimestre 2 para impedir o bloqueio
+# Reconstrução das chaves do Q2
 codigos_q2_raw = ["80001", "80002", "80003", "80005", "80006", "80007", "80010", "80011", "80012", "80021", "80022", "80039", "80048", "80052", "80053", "80055", "80058", "80060", "80061", "80062", "80063"]
 codigos_q2 = list(map(int, codigos_q2_raw))
 
-# --- BASE DE DADOS DO QUADRIMESTRE 2 BLINDADA ---
+# --- BASE DE DADOS DO QUADRIMESTRE 2 CORRIGIDA ---
 meta_fat_q2_str = ["201600.0", "1175500.0", "1426400.0", "1061900.0", "1328550.0", "1522000.0", "807500.0", "969600.0", "1623000.0", "101100.0", "912100.0", "842200.0", "1161200.0", "269500.0", "457500.0", "444500.0", "1373600.0", "24000.0", "248000.0", "166000.0", "121000.0"]
 real_fat_q2_str = ["248177.05", "1132333.32", "1316356.65", "753443.05", "1306335.22", "1663758.70", "852723.95", "1023775.79", "2276592.50", "68061.30", "961403.50", "824737.25", "1204014.20", "393428.14", "545417.85", "344840.42", "694983.00", "21504.00", "374437.30", "50216.50", "46956.50"]
 meta_peso_q2_str = ["11066.8", "58834.0", "63380.6", "50818.5", "62371.7", "72423.2", "41256.6", "44302.2", "89046.0", "51246.2", "56276.0", "52243.6", "73848.5", "17546.2", "28646.2", "26572.0", "29000.0", "1000.0", "23600.0", "14572.4", "13572.0"]
@@ -64,8 +64,9 @@ meta_pm_q2_str = ["17.75", "16.43", "17.15", "17.73", "17.48", "18.25", "16.30",
 real_pm_q2_str = ["15.84", "16.18", "17.00", "16.38", "17.17", "18.34", "15.78", "18.77", "17.39", "20.31", "17.80", "15.95", "15.83", "17.00", "19.17", "17.76", "23.79", "24.16", "20.45", "14.97", "24.36"]
 meta_pos_q2_str = ["16.0", "586.0", "600.0", "514.0", "616.0", "551.0", "480.0", "320.0", "32.0", "138.0", "615.0", "400.0", "400.0", "44.0", "240.0", "65.0", "125.0", "4.0", "175.0", "54.0", "44.0"]
 real_pos_q2_str = ["16.0", "581.0", "575.0", "493.0", "578.0", "510.0", "445.0", "288.0", "34.0", "58.0", "598.0", "352.0", "338.0", "61.0", "223.0", "58.0", "122.0", "4.0", "91.0", "35.0", "25.0"]
-meta_cad_q2_str = ["0.0", "15.0", "14.0", "16.0", "14.0", "16.0", "32.0", "32.0", "0.0", "22.0", "14.0", "32.0", "32.0", "6.0", "32.0", "23.0", "2.0", "2.0", "0.0", "40.0", "40.0", "40.0"]
-real_cad_q2_str = ["0.0", "5.0", "9.0", "5.0", "11.0", "4.0", "12.0", "2.0", "3.0", "7.0", "10.0", "7.0", "5.0", "1.0", "22.0", "5.0", "1.0", "1.0", "0.0", "14.0", "5.0", "6.0"]
+# Corrigido: Removido o item 2.0 duplicado
+meta_cad_q2_str = ["0.0", "15.0", "14.0", "16.0", "14.0", "16.0", "32.0", "32.0", "0.0", "22.0", "14.0", "32.0", "32.0", "6.0", "32.0", "23.0", "2.0", "0.0", "40.0", "40.0", "40.0"]
+real_cad_q2_str = ["0.0", "5.0", "9.0", "5.0", "11.0", "4.0", "12.0", "2.0", "3.0", "7.0", "10.0", "7.0", "5.0", "1.0", "22.0", "5.0", "1.0", "0.0", "14.0", "5.0", "6.0"]
 
 data_q2_raw = {
     'COD': codigos_q2,
@@ -81,11 +82,10 @@ data_q2_raw = {
     'Meta_Cad': list(map(float, meta_cad_q2_str)),
     'Real_Cad': list(map(float, real_cad_q2_str))
 }
-
 df_q1 = pd.DataFrame(data_q1_raw)
 df_q2 = pd.DataFrame(data_q2_raw)
 
-# 🔄 INTEGRAÇÃO DINÂMICA VIA DATAFRAME (Soma matemática de Q1 + Q2 inteligivel por COD)
+# 🔄 INTEGRAÇÃO DINÂMICA VIA DATAFRAME
 merged = pd.merge(df_q1, df_q2, on='COD', how='outer', suffixes=('_q1', '_q2'))
 
 df = pd.DataFrame()
@@ -96,11 +96,11 @@ df['Vendedor'] = merged['Vendedor_q2'].fillna(merged['Vendedor_q1'])
 for kpi in ['Meta_Fat', 'Real_Fat', 'Meta_Peso', 'Real_Peso', 'Meta_Pos', 'Real_Pos', 'Meta_Cad', 'Real_Cad']:
     df[kpi] = merged[f'{kpi}_q1'].fillna(0) + merged[f'{kpi}_q2'].fillna(0)
 
-# Média balanceada de Preço Médio (PM)
+# Média de Preço Médio (PM)
 df['Meta_PM'] = merged[['Meta_PM_q1', 'Meta_PM_q2']].mean(axis=1)
 df['Real_PM'] = merged[['Real_PM_q1', 'Real_PM_q2']].mean(axis=1)
 
-# ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor
+# Filtro do nome corrigido (Retorna String comum)
 df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
@@ -116,39 +116,27 @@ df['At_PM'] = (df['Real_PM'] / df['Meta_PM']) * 100
 df['At_Pos'] = (df['Real_Pos'] / df['Meta_Pos']) * 100
 df['At_Cad'] = np.where(df['Meta_Cad'] <= 1.0, np.where(df['Real_Cad'] > 0, 115.0, 0.0), (df['Real_Cad'] / df['Meta_Cad']) * 100)
 
-# Regra de Faixas de Pontuação conforme regulamento da campanha
+# Regra de Faixas de Pontuação
 def calcular_pontos_faixa(ating, pt90, pt100, pt110):
-    if ating < 90.0:
-        return 0.0
-    elif ating < 100.0:
-        return float(pt90)
-    elif ating < 110.0:
-        return float(pt100)
-    else:
-        return float(pt110)
-
+    if ating < 90.0: return 0.0
+    elif ating < 100.0: return float(pt90)
+    elif ating < 110.0: return float(pt100)
+    else: return float(pt110)
 
 df['P_Fat'] = df['At_Fat'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
-
 df['P_Peso'] = df['At_Peso'].apply(lambda x: calcular_pontos_faixa(x, 5, 10, 15))
-
 df['P_PM'] = df['At_PM'].apply(lambda x: calcular_pontos_faixa(x, 10, 15, 20))
-
 df['P_Pos'] = df['At_Pos'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
-
 df['P_Cad'] = df['At_Cad'].apply(lambda x: calcular_pontos_faixa(x, 5, 7.5, 10))
-
 
 # Pontuação líquida acumulada dos KPIs
 df['Pontuacao_Base'] = df['P_Fat'] + df['P_Peso'] + df['P_PM'] + df['P_Pos'] + df['P_Cad']
-
 
 # --- SISTEMA DE DESEMPATE POR MAIOR PREÇO MÉDIO REALIZADO DO ANO ---
 df['Bonus_Desempate'] = 0.0
 df['Marcacao'] = ""
 
 pontuacoes_empatadas = df[df.duplicated(subset=['Pontuacao_Base'], keep=False)]['Pontuacao_Base'].unique()
-
 
 for nota in pontuacoes_empatadas:
     if nota > 0:
@@ -159,45 +147,24 @@ for nota in pontuacoes_empatadas:
         df.loc[idx_vencedor, 'Bonus_Desempate'] = 0.01
         df.loc[idx_vencedor, 'Marcacao'] = " 🎯"
 
-
 df['Pontuacao_Total'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
-
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
-
 df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
 # ------------------------------------------------------------
-
 
 # Bloco visual dos pódios (Top 5)
 if len(df_ranking) > 0:
     col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
-    
     col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Total']:.2f} pts")
-    
-    if len(df_ranking) > 1:
-        col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts")
-        
-    if len(df_ranking) > 2:
-        col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts")
-        
-    if len(df_ranking) > 3:
-        col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts")
-        
-    if len(df_ranking) > 4:
-        col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts")
-        
+    if len(df_ranking) > 1: col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 2: col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 3: col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Total']:.2f} pts")
+    if len(df_ranking) > 4: col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Total']:.2f} pts")
     st.write("---")
 
-
 df_ranking.index += 1
-
 st.markdown("### 📋 TABELA DE PONTOS POR KPI (CONSOLIDADO ANUAL)")
-
 st.dataframe(df_ranking[['COD', 'Vendedor', 'Pontuacao_Total', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']].rename(columns={'Pontuacao_Total': 'PONTUAÇÃO TOTAL'}), use_container_width=True)
-
 st.write("---")
-
 st.markdown("### 📊 PERCENTUAIS DE ATINGIMENTO METAS (%)")
-
 st.dataframe(df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].style.format({'At_Fat': '{:.1f}%', 'At_Peso': '{:.1f}%', 'At_PM': '{:.1f}%', 'At_Pos': '{:.1f}%', 'At_Cad': '{:.1f}%'}), use_container_width=True)
-
