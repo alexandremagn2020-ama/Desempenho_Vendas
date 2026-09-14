@@ -20,9 +20,9 @@ texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001"]
 lista_codigos = list(map(int, texto_codigos))
 codigos_filtrados = list(map(int, texto_filtrados))
 
-# --- DICIONÁRIOS DE DADOS DOS DOIS QUADRIMESTRES ---
+# --- DICIONÁRIOS DE DADOS DOS DOES QUADRIMESTRES ---
 data_q1 = {
-    'COD':,
+    'COD': lista_codigos,
     'Meta_Fat': [318880.0, 1171100.0, 1381200.0, 1136600.0, 1396000.0, 1658500.0, 751750.0, 1132500.0, 2315350.0, 2535200.0, 96000.0, 348750.0, 967250.0, 860500.0, 1293350.0, 664000.0, 479800.0, 331200.0, 241500.0, 1.0, 0.0],
     'Real_Fat': [254754.40, 1091928.00, 1232846.85, 970745.58, 1251693.40, 1590120.70, 687613.80, 932907.49, 2280576.70, 2471894.88, 66186.00, 79820.22, 830930.82, 806371.35, 988358.30, 667041.86, 395428.14, 182194.05, 113946.15, 34167.00, 0.0],
     'Meta_Peso': [17000.0, 70000.0, 81000.0, 65000.0, 80000.0, 91000.0, 48500.0, 60000.0, 115500.0, 105000.0, 4000.0, 17500.0, 54500.0, 51500.0, 69500.0, 37500.0, 24000.0, 18000.0, 12000.0, 1.0, 0.0],
@@ -69,6 +69,8 @@ df_ano = pd.DataFrame({
 df_ano = df_ano.merge(df_q1[['COD', 'Meta_Fat', 'Real_Fat', 'Meta_Peso', 'Real_Peso', 'Meta_Pos', 'Real_Pos', 'Meta_Cad', 'Real_Cad']], on='COD', how='left')
 df_ano = df_ano.merge(df_q2[['COD', 'Meta_Fat', 'Real_Fat', 'Meta_Peso', 'Real_Peso', 'Meta_Pos', 'Real_Pos', 'Meta_Cad', 'Real_Cad']], on='COD', suffixes=('_q1', '_q2'), how='left')
 
+# Inicialização do dataframe consolidado com os resultados somados
+df = pd.DataFrame()
 df['Meta_Fat'] = df_ano['Meta_Fat_q1'].fillna(0) + df_ano['Meta_Fat_q2'].fillna(0)
 df['Real_Fat'] = df_ano['Real_Fat_q1'].fillna(0) + df_ano['Real_Fat_q2'].fillna(0)
 df['Meta_Peso'] = df_ano['Meta_Peso_q1'].fillna(0) + df_ano['Meta_Peso_q2'].fillna(0)
@@ -84,7 +86,7 @@ df_ano = df_ano.merge(df_q2[['COD', 'Meta_PM', 'Real_PM']], on='COD', suffixes=(
 df['Meta_PM'] = (df_ano['Meta_PM_q1'].fillna(0) + df_ano['Meta_PM_q2'].fillna(0)) / 2
 df['Real_PM'] = (df_ano['Real_PM_q1'].fillna(0) + df_ano['Real_PM_q2'].fillna(0)) / 2
 
-# ✂️ Filtro de primeiro nome
+# ✂️ Filtro de primeiro nome em conformidade com o padrão de Julho
 df['Vendedor'] = df_ano['Vendedor'].apply(lambda x: str(x).split() if str(x).strip() else "")
 df['COD'] = df_ano['COD']
 
