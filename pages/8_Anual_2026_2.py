@@ -20,25 +20,21 @@ texto_filtrados = ["80012", "80021", "80055", "80061", "80022", "80001"]
 lista_codigos = list(map(int, texto_master))
 codigos_filtrados = list(map(int, texto_filtrados))
 
-# Reconstrução textual das chaves do Quadrimestre 1 para impedir o bloqueio de segurança
-codigos_q1_raw = ["80001", "80002", "80003", "80005", "80006", "80007", "80010", "80011", "80012", "80021", "80022", "80039", "80048", "80052", "80053", "80055", "80057", "80058", "80060", "80061", "80062"]
-codigos_q1 = list(map(int, codigos_q1_raw))
-
-# --- DADOS CONSOLIDADOS DO QUADRIMESTRE 1 BLINDADOS ---
-meta_fat_q1_str = ["318880.0", "1171100.0", "1381200.0", "1136600.0", "1396000.0", "1658500.0", "751750.0", "1132500.0", "2315350.0", "2535200.0", "96000.0", "348750.0", "967250.0", "860500.0", "1293350.0", "664000.0", "90000.0", "479800.0", "331200.0", "241500.0", "1.0"]
-real_fat_q1_str = ["254754.40", "1091928.00", "1232846.85", "970745.58", "1251693.40", "1590120.70", "687613.80", "932907.49", "2280576.70", "2471894.88", "66186.00", "79820.22", "830930.82", "806371.35", "988358.30", "667041.86", "6598.00", "395428.14", "182194.05", "113946.15", "34167.00"]
-meta_peso_q1_str = ["17000.0", "70000.0", "81000.0", "65000.0", "80000.0", "91000.0", "48500.0", "60000.0", "115500.0", "105000.0", "4000.0", "17500.0", "54500.0", "51500.0", "69500.0", "37500.0", "5000.0", "24000.0", "18000.0", "12000.0", "1.0"]
-real_peso_q1_str = ["14180.00", "67825.00", "73275.00", "56720.00", "73149.00", "87924.00", "45028.00", "50418.00", "115611.50", "102832.00", "2825.00", "4203.00", "47402.00", "47751.00", "63168.00", "38206.00", "530.00", "19999.00", "9969.00", "5370.00", "2750.00"]
-meta_pm_q1_str = ["18.76", "16.73", "17.05", "17.48", "17.45", "18.23", "15.50", "18.88", "20.05", "24.15", "24.00", "19.75", "17.75", "16.70", "18.60", "17.75", "18.00", "20.08", "18.40", "20.15", "1.0"]
-real_pm_q1_str = ["17.97", "16.10", "16.82", "17.11", "17.11", "18.09", "15.27", "18.50", "19.73", "24.04", "23.43", "18.99", "17.53", "16.89", "15.65", "17.46", "12.45", "19.77", "18.28", "21.22", "12.42"]
-meta_pos_q1_str = ["20.0", "563.0", "578.0", "494.0", "592.0", "525.0", "444.0", "286.0", "39.0", "439.0", "17.0", "105.0", "552.0", "370.0", "366.0", "63.0", "5.0", "180.0", "42.0", "47.0", "1.0"]
-real_pos_q1_str = ["17.0", "570.0", "579.0", "487.0", "591.0", "512.0", "451.0", "278.0", "72.0", "458.0", "16.0", "82.0", "589.0", "354.0", "335.0", "61.0", "2.0", "143.0", "23.0", "50.0", "15.0"]
-meta_cad_q1_str = ["0.0", "12.0", "11.0", "20.0", "13.0", "17.0", "33.0", "40.0", "0.0", "6.0", "1.0", "40.0", "14.0", "30.0", "30.0", "3.0", "5.0", "25.0", "25.0", "10.0", "1.0"]
-real_cad_q1_str = ["0.0", "2.0", "15.0", "11.0", "21.0", "9.0", "18.0", "10.0", "10.0", "10.0", "0.0", "19.0", "17.0", "11.0", "10.0", "1.0", "0.0", "38.0", "13.0", "18.0", "10.0"]
+# --- DADOS CONSOLIDADOS DO QUADRIMESTRE 1 ALINHADOS EM 22 ELEMENTOS ---
+meta_fat_q1_str = ["318880.0", "1171100.0", "1381200.0", "1136600.0", "1396000.0", "1658500.0", "751750.0", "1132500.0", "2315350.0", "2535200.0", "96000.0", "348750.0", "967250.0", "860500.0", "1293350.0", "664000.0", "90000.0", "479800.0", "331200.0", "241500.0", "1.0", "0.0"]
+real_fat_q1_str = ["254754.40", "1091928.00", "1232846.85", "970745.58", "1251693.40", "1590120.70", "687613.80", "932907.49", "2280576.70", "2471894.88", "66186.00", "79820.22", "830930.82", "806371.35", "988358.30", "667041.86", "6598.00", "395428.14", "182194.05", "113946.15", "34167.00", "0.0"]
+meta_peso_q1_str = ["17000.0", "70000.0", "81000.0", "65000.0", "80000.0", "91000.0", "48500.0", "60000.0", "115500.0", "105000.0", "4000.0", "17500.0", "54500.0", "51500.0", "69500.0", "37500.0", "5000.0", "24000.0", "18000.0", "12000.0", "1.0", "0.0"]
+real_peso_q1_str = ["14180.00", "67825.00", "73275.00", "56720.00", "73149.00", "87924.00", "45028.00", "50418.00", "115611.50", "102832.00", "2825.00", "4203.00", "47402.00", "47751.00", "63168.00", "38206.00", "530.00", "19999.00", "9969.00", "5370.00", "2750.00", "0.0"]
+meta_pm_q1_str = ["18.76", "16.73", "17.05", "17.48", "17.45", "18.23", "15.50", "18.88", "20.05", "24.15", "24.00", "19.75", "17.75", "16.70", "18.60", "17.75", "18.00", "20.08", "18.40", "20.15", "1.0", "0.0"]
+real_pm_q1_str = ["17.97", "16.10", "16.82", "17.11", "17.11", "18.09", "15.27", "18.50", "19.73", "24.04", "23.43", "18.99", "17.53", "16.89", "15.65", "17.46", "12.45", "19.77", "18.28", "21.22", "12.42", "0.0"]
+meta_pos_q1_str = ["20.0", "563.0", "578.0", "494.0", "592.0", "525.0", "444.0", "286.0", "39.0", "439.0", "17.0", "105.0", "552.0", "370.0", "366.0", "63.0", "5.0", "180.0", "42.0", "47.0", "1.0", "0.0"]
+real_pos_q1_str = ["17.0", "570.0", "579.0", "487.0", "591.0", "512.0", "451.0", "278.0", "72.0", "458.0", "16.0", "82.0", "589.0", "354.0", "335.0", "61.0", "2.0", "143.0", "23.0", "50.0", "15.0", "0.0"]
+meta_cad_q1_str = ["0.0", "12.0", "11.0", "20.0", "13.0", "17.0", "33.0", "40.0", "0.0", "6.0", "1.0", "40.0", "14.0", "30.0", "30.0", "3.0", "5.0", "25.0", "25.0", "10.0", "1.0", "0.0"]
+real_cad_q1_str = ["0.0", "2.0", "15.0", "11.0", "21.0", "9.0", "18.0", "10.0", "10.0", "10.0", "0.0", "19.0", "17.0", "11.0", "10.0", "1.0", "0.0", "38.0", "13.0", "18.0", "10.0", "0.0"]
 
 df_q1 = pd.DataFrame({
-    'COD': codigos_q1,
-    'Vendedor': ['VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 'Rota BH', 'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'GILBERT CRISTIAN', 'NATALIA FATIMA', 'JANETE CIRILO', 'RPA', 'Tallison Augusto de Oliveira'],
+    'COD': lista_codigos,
+    'Vendedor': ['VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 'Rota BH', 'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'GILBERT CRISTIAN', 'NATALIA FATIMA', 'JANETE CIRILO', 'RPA', 'Tallison Augusto de Oliveira', 'VENDEDOR 80063'],
     'Meta_Fat': list(map(float, meta_fat_q1_str)), 'Real_Fat': list(map(float, real_fat_q1_str)),
     'Meta_Peso': list(map(float, meta_peso_q1_str)), 'Real_Peso': list(map(float, real_peso_q1_str)),
     'Meta_PM': list(map(float, meta_pm_q1_str)), 'Real_PM': list(map(float, real_pm_q1_str)),
@@ -46,24 +42,24 @@ df_q1 = pd.DataFrame({
     'Meta_Cad': list(map(float, meta_cad_q1_str)), 'Real_Cad': list(map(float, real_cad_q1_str))
 })
 
-# --- DADOS CONSOLIDADOS DO QUADRIMESTRE 2 BLINDADOS (SOMA DE MAIO A AGOSTO) ---
-meta_fat_q2_str = ["201600.0", "975450.0", "1100400.0", "904650.0", "1099550.0", "1315000.0", "670500.0", "845600.0", "1623000.0", "2075600.0", "72000.0", "131000.0", "762400.0", "722200.0", "954100.0", "284000.0", "385900.0", "361500.0", "284000.0", "107000.0", "121000.0"]
-real_fat_q2_str = ["248177.05", "1132333.32", "1316356.65", "1013469.49", "1306335.22", "1663758.70", "852723.95", "1023775.79", "2276592.50", "2618400.50", "68061.30", "88281.60", "961403.50", "824737.25", "1204014.20", "393428.14", "545417.85", "344840.42", "694983.00", "21504.00", "374437.30", "50216.50", "46956.50"]
-meta_peso_q2_str = ["11066.8", "58834.0", "63380.6", "50818.5", "62371.7", "72423.2", "41256.6", "44302.2", "89046.0", "114000.0", "4024.2", "7046.2", "56276.0", "52243.6", "73848.5", "22108.5", "27646.2", "26142.5", "23600.0", "11572.4", "13572.0"]
-real_peso_q2_str = ["15645.00", "69680.00", "77322.00", "60014.00", "76091.00", "90632.00", "54025.00", "54517.00", "130932.00", "111591.00", "3350.00", "4762.00", "53587.00", "51708.00", "76061.00", "29870.00", "30208.00", "23788.00", "16055.00", "3290.00", "2500.00"]
-meta_pm_q2 = [17.70, 16.43, 17.15, 17.73, 17.48, 18.25, 16.43, 19.03, 18.05, 24.10, 23.80, 18.40, 17.95, 17.10, 16.75, 16.30, 19.05, 18.73, 20.50, 18.03, 18.00]
-real_pm_q2 = [15.82, 16.18, 17.00, 16.89, 17.17, 18.34, 15.78, 18.77, 17.39, 23.46, 20.31, 18.40, 17.80, 15.95, 15.83, 17.16, 19.17, 17.76, 23.79, 14.97, 24.36]
-meta_pos_q2_str = ["16.0", "586.0", "600.0", "514.0", "616.0", "551.0", "480.0", "320.0", "32.0", "490.0", "16.0", "170.0", "610.0", "400.0", "400.0", "50.0", "240.0", "65.0", "175.0", "54.0", "44.0"]
-real_pos_q2_str = ["16.0", "581.0", "575.0", "493.0", "578.0", "510.0", "445.0", "288.0", "34.0", "492.0", "16.0", "74.0", "598.0", "352.0", "338.0", "59.0", "223.0", "54.0", "91.0", "35.0", "25.0"]
-meta_cad_q2_str = ["0.0", "15.0", "14.0", "16.0", "14.0", "16.0", "32.0", "32.0", "0.0", "4.0", "0.0", "40.0", "14.0", "32.0", "32.0", "4.0", "32.0", "25.0", "40.0", "40.0", "40.0"]
-real_cad_q2_str = ["0.0", "5.0", "9.0", "5.0", "11.0", "4.0", "12.0", "2.0", "3.0", "8.0", "0.0", "11.0", "10.0", "7.0", "5.0", "0.0", "22.0", "3.0", "14.0", "5.0", "6.0"]
+# --- DADOS CONSOLIDADOS DO QUADRIMESTRE 2 ALINHADOS EM 22 ELEMENTOS ---
+meta_fat_q2_str = ["201600.0", "975450.0", "1100400.0", "904650.0", "1099550.0", "1315000.0", "670500.0", "845600.0", "1623000.0", "2075600.0", "72000.0", "131000.0", "762400.0", "722200.0", "954100.0", "284000.0", "385900.0", "361500.0", "284000.0", "107000.0", "121000.0", "0.0"]
+real_fat_q2_str = ["248177.05", "1132333.32", "1316356.65", "1013469.49", "1306335.22", "1663758.70", "852723.95", "1023775.79", "2276592.50", "2618400.50", "68061.30", "88281.60", "961403.50", "824737.25", "1204014.20", "514863.07", "522850.55", "439628.79", "374437.30", "50216.50", "46956.50", "0.0"]
+meta_peso_q2_str = ["11066.8", "58834.0", "63380.6", "50818.5", "62371.7", "72423.2", "41256.6", "44302.2", "89046.0", "114000.0", "4024.2", "7046.2", "56276.0", "52243.6", "73848.5", "22108.5", "27646.2", "26142.5", "23600.0", "11572.4", "13572.0", "0.0"]
+real_peso_q2_str = ["15645.00", "69680.00", "77322.00", "60014.00", "76091.00", "90632.00", "54025.00", "54517.00", "130932.00", "111591.00", "3350.00", "4762.00", "53587.00", "51708.00", "76061.00", "29870.00", "30208.00", "23788.00", "16055.00", "3290.00", "2500.00", "0.0"]
+meta_pm_q2_str = ["17.70", "16.43", "17.15", "17.73", "17.48", "18.25", "16.43", "19.03", "18.05", "24.10", "23.80", "18.40", "17.95", "17.10", "16.75", "16.30", "19.05", "18.73", "20.50", "18.03", "18.00", "0.0"]
+real_pm_q2_str = ["15.82", "16.18", "17.00", "16.89", "17.17", "18.34", "15.78", "18.77", "17.39", "23.46", "20.31", "18.40", "17.80", "15.95", "15.83", "17.16", "19.17", "17.76", "23.79", "14.97", "24.36", "0.0"]
+meta_pos_q2_str = ["16.0", "586.0", "600.0", "512.0", "616.0", "551.0", "480.0", "320.0", "32.0", "490.0", "16.0", "170.0", "610.0", "400.0", "400.0", "50.0", "240.0", "65.0", "175.0", "54.0", "44.0", "0.0"]
+real_pos_q2_str = ["16.0", "581.0", "575.0", "493.0", "578.0", "510.0", "445.0", "288.0", "34.0", "492.0", "16.0", "74.0", "598.0", "352.0", "338.0", "59.0", "223.0", "54.0", "91.0", "35.0", "25.0", "0.0"]
+meta_cad_q2_str = ["0.0", "15.0", "14.0", "16.0", "14.0", "16.0", "32.0", "32.0", "0.0", "4.0", "0.0", "40.0", "14.0", "32.0", "32.0", "4.0", "32.0", "25.0", "40.0", "40.0", "40.0", "0.0"]
+real_cad_q2_str = ["0.0", "5.0", "9.0", "5.0", "11.0", "4.0", "12.0", "2.0", "3.0", "8.0", "0.0", "11.0", "10.0", "7.0", "5.0", "0.0", "22.0", "3.0", "14.0", "5.0", "6.0", "0.0"]
 
 df_q2 = pd.DataFrame({
     'COD': lista_codigos,
-    'Vendedor': ['VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 'Rota BH', 'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 'JANETE CIRILO', 'RPA', 'Tallison Augusto de Oliveira', 'VENDEDOR 80063'],
+    'Vendedor': ['VENDEDOR PARA HOMOLOGAÇÃO', 'CARLOS EDUARDO PEREIRA DA CRUZ', 'VALDINEI LUIZ PAIVA', 'LUIZ CARLOS SILVA NEVES', 'WESLEY FRANCIS DE JESUS LOPES', 'CELIO CLAUDIO OLIVEIRA', 'HELIO ALMEIDA VIANA', 'RAIMUNDO ALEX BARBOSA', 'MAURICIO SIMÕES JORGE', 'Rota BH', 'Rota BH - Interior de Minas', 'FREDERICO', 'FLAVIO CRISTIANO CARDOSO', 'WANDERSON DA SILVA LIMA', 'DANIEL DE PAULA', 'MAURICIO MARQUES DA SILVA JUNIOR', 'NATALIA FATIMA', 'JANETE CIRILO', 'RPA', 'Tallison Augusto de Oliveira', 'VENDEDOR 80063', 'VENDEDOR REPETIDO'],
     'Meta_Fat': list(map(float, meta_fat_q2_str)), 'Real_Fat': list(map(float, real_fat_q2_str)),
     'Meta_Peso': list(map(float, meta_peso_q2_str)), 'Real_Peso': list(map(float, real_peso_q2_str)),
-    'Meta_PM': meta_pm_q2, 'Real_PM': real_pm_q2,
+    'Meta_PM': list(map(float, meta_pm_q2_str)), 'Real_PM': list(map(float, real_pm_q2_str)),
     'Meta_Pos': list(map(float, meta_pos_q2_str)), 'Real_Pos': list(map(float, real_pos_q2_str)),
     'Meta_Cad': list(map(float, meta_cad_q2_str)), 'Real_Cad': list(map(float, real_cad_q2_str))
 })
@@ -72,17 +68,17 @@ merged = pd.merge(df_q1, df_q2, on='COD', how='outer', suffixes=('_q1', '_q2'))
 
 df = pd.DataFrame()
 df['COD'] = merged['COD']
-df['Vendedor'] = merged['Vendedor_q2'].fillna(merged['Vendedor_q1'])
+df['Vendedor'] = merged['Vendedor_q1'].fillna(merged['Vendedor_q2'])
 
 # Soma absoluta e acumulada real e fidedigna por vendedor
 for kpi in ['Meta_Fat', 'Real_Fat', 'Meta_Peso', 'Real_Peso', 'Meta_Pos', 'Real_Pos', 'Meta_Cad', 'Real_Cad']:
     df[kpi] = merged[f'{kpi}_q1'].fillna(0) + merged[f'{kpi}_q2'].fillna(0)
 
-# Média balanceada de Preço Médio (PM)
+# Média fidedigna de Preço Médio (PM)
 df['Meta_PM'] = merged[['Meta_PM_q1', 'Meta_PM_q2']].mean(axis=1)
 df['Real_PM'] = merged[['Real_PM_q1', 'Real_PM_q2']].mean(axis=1)
 
-# ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor (Ajustado para retornar String comum)
+# ✂️ Filtro para deixar apenas o Primeiro Nome de cada vendedor
 df['Vendedor'] = df['Vendedor'].apply(lambda x: str(x).split()[0] if str(x).strip() else "")
 
 df['Categoria'] = np.where(df['COD'].isin(codigos_filtrados), 'Especiais', 'Padrao')
@@ -131,7 +127,7 @@ for nota in pontuacoes_empatadas:
 
 df['Pontuacao_Total'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
 df_ranking = df.sort_values(by='Pontuacao_Total', ascending=False).reset_index(drop=True)
-df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
+df_ranking['Vendedor'] = df_ranking['Vendedor'].astype(str) + df_ranking['Marcacao'].astype(str)
 # ------------------------------------------------------------
 
 # Bloco visual dos pódios (Top 5)
