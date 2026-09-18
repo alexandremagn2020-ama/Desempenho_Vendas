@@ -5,11 +5,10 @@ import auth
 
 auth.validar_senha()  # bloqueia se não tiver senha correta
 
-# 🎯 SISTEMA DE SEGURANÇA PARA A LOGO
 try:
-    st.sidebar.image("../logo.png", use_container_width=True)
+    st.sidebar.image("logo.png", use_container_width=True)
 except Exception:
-    st.sidebar.warning("⚠️ Arquivo 'logo.png' não encontrado na raiz do projeto.")
+    st.sidebar.warning("⚠️ Arquivo 'logo.png' não encontrado.")
 
 st.markdown("## 🏆 Ranking Consolidado do Ano (Quadrimestre 1 + Quadrimestre 2)")
 
@@ -235,34 +234,34 @@ df['Pontuacao_Ordenada'] = df['Pontuacao_Base'] + df['Bonus_Desempate']
 df_ranking = df.sort_values(by='Pontuacao_Ordenada', ascending=False).reset_index(drop=True)
 df_ranking['Vendedor'] = df_ranking['Vendedor'] + df_ranking['Marcacao']
 
-# 🏆 Mantém apenas os 5 primeiros do ranking anual consolidado
-df_ranking = df_ranking.head(5).reset_index(drop=True)
-
 # ============================================================
 # BLOCO 4 — EXIBIÇÃO
+# Pódio: somente os 5 primeiros | Tabelas: ranking completo
 # ============================================================
-if len(df_ranking) > 0:
+top5 = df_ranking.head(5).reset_index(drop=True)
+
+if len(top5) > 0:
     col_t1, col_t2, col_t3, col_t4, col_t5 = st.columns(5)
-    col_t1.metric(label="🥇 1º LUGAR", value=df_ranking.loc[0, 'Vendedor'], delta=f"{df_ranking.loc[0, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 1:
-        col_t2.metric(label="🥈 2º LUGAR", value=df_ranking.loc[1, 'Vendedor'], delta=f"{df_ranking.loc[1, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 2:
-        col_t3.metric(label="🥉 3º LUGAR", value=df_ranking.loc[2, 'Vendedor'], delta=f"{df_ranking.loc[2, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 3:
-        col_t4.metric(label="🏅 4º LUGAR", value=df_ranking.loc[3, 'Vendedor'], delta=f"{df_ranking.loc[3, 'Pontuacao_Base']:.2f} pts")
-    if len(df_ranking) > 4:
-        col_t5.metric(label="🏅 5º LUGAR", value=df_ranking.loc[4, 'Vendedor'], delta=f"{df_ranking.loc[4, 'Pontuacao_Base']:.2f} pts")
+    col_t1.metric(label="🥇 1º LUGAR", value=top5.loc[0, 'Vendedor'], delta=f"{top5.loc[0, 'Pontuacao_Base']:.2f} pts")
+    if len(top5) > 1:
+        col_t2.metric(label="🥈 2º LUGAR", value=top5.loc[1, 'Vendedor'], delta=f"{top5.loc[1, 'Pontuacao_Base']:.2f} pts")
+    if len(top5) > 2:
+        col_t3.metric(label="🥉 3º LUGAR", value=top5.loc[2, 'Vendedor'], delta=f"{top5.loc[2, 'Pontuacao_Base']:.2f} pts")
+    if len(top5) > 3:
+        col_t4.metric(label="🏅 4º LUGAR", value=top5.loc[3, 'Vendedor'], delta=f"{top5.loc[3, 'Pontuacao_Base']:.2f} pts")
+    if len(top5) > 4:
+        col_t5.metric(label="🏅 5º LUGAR", value=top5.loc[4, 'Vendedor'], delta=f"{top5.loc[4, 'Pontuacao_Base']:.2f} pts")
     st.write("---")
 
 df_ranking.index += 1
-st.markdown("### 📋 TOP 5 — PONTOS POR KPI (SOMA ANUAL: Q1 + Q2)")
+st.markdown("### 📋 TABELA DE PONTOS POR KPI (SOMA ANUAL: Q1 + Q2)")
 st.dataframe(
     df_ranking[['COD', 'Vendedor', 'Pontuacao_Base', 'P_Fat', 'P_Peso', 'P_PM', 'P_Pos', 'P_Cad']]
     .rename(columns={'Pontuacao_Base': 'PONTUAÇÃO TOTAL'}),
     use_container_width=True
 )
 st.write("---")
-st.markdown("### 📊 TOP 5 — PERCENTUAIS DE ATINGIMENTO ANUAL (%)")
+st.markdown("### 📊 PERCENTUAIS DE ATINGIMENTO ANUAL (%)")
 st.dataframe(
     df_ranking[['COD', 'Vendedor', 'At_Fat', 'At_Peso', 'At_PM', 'At_Pos', 'At_Cad']].style.format({
         'At_Fat': '{:.1f}%', 'At_Peso': '{:.1f}%', 'At_PM': '{:.1f}%', 'At_Pos': '{:.1f}%', 'At_Cad': '{:.1f}%'
